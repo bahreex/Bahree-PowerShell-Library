@@ -16,7 +16,7 @@
     
 .Notes
 
-Possible VM Provisioning State Values:
+Possible VM Provisioning State Values (Model View):
 
 - Creating	:Indicates the virtual Machine is being created.
 - Updating	:Indicates that there is an update operation in progress on the Virtual Machine.

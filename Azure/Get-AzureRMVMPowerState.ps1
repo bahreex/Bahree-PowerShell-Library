@@ -16,7 +16,7 @@
     
 .Notes
 
-Possible VM Power State Values:
+Possible VM Power State Values (Instance View):
 
 Starting     :Indicates the virtual machine is being started from the Hypervisor standpoint.
 Running      :Indicates that the virtual machine is being started from the Hypervisor standpoint.
