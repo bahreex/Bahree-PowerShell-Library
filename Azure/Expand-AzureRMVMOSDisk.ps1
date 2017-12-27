@@ -37,7 +37,7 @@ param(
     [String]$VMName,
 
     [Parameter(Mandatory=$true)]
-    [ValidateRange(30,4095)]
+    [ValidateRange(30,2048)]
     [int]$NewOSDiskSize
 )
 
