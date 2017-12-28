@@ -1,6 +1,6 @@
 # Bahree-PS-Library
 
-_*Library of various PowerShell scripts/modules created for automating different tasks across Cloud, On-Premises, and Devices*_
+_**Library of various PowerShell scripts/modules created for automating different tasks across Cloud, On-Premises, and Devices**_
 
 ## Azure
 
@@ -8,3 +8,4 @@ _*Library of various PowerShell scripts/modules created for automating different
 - **Expand-AzureRMVMDataDisk.ps1** - Increase a particular Data Disk size of an Azure VM. Supports both Managed and Unmanaged Disks. Disk size reduction not supported by Azure.
 - **Get-AzureRMVMPowerState.ps1** - Get the current Power State of an Azure VM.
 - **Get-AzureRMVMProvisioningState.ps1** - Get the current Provisioning State of an Azure VM.
+- **Extend-WinOSDiskSize.ps1** - Extend/Increase the OS Drive Partition size for any Windows based Machine by adding the entire unallocated space available on the OS Disk, if any.
