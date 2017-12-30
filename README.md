@@ -10,8 +10,8 @@ _**Library of various PowerShell scripts/modules created for automating differen
 - **Get-AzureRMVMProvisioningState.ps1** - Get the current Provisioning State of an Azure VM.
 - **Scale-AzureRMVMUp.ps1** - Lets you scale-up any VM by resizing it to a new size within the same VM family.
 - **Scale-AzureRMVMDown.ps1** - Lets you scale-down any VM by resizing it to a new size within the same VM family.
-- **Start-AzureRMVMAll.ps1** -
-- **Stop-AzureRMVMAll.ps1** - s
+- **Start-AzureRMVMAll.ps1** - Asynchronously starts all Azure VMs in a Subscription or in one or more Resource Groups, or a specific VM
+- **Stop-AzureRMVMAll.ps1** - Asynchronously stops all Azure VMs in a Subscription, or in one or more Resource Groups, or a specific VM
 
 ## General
 
