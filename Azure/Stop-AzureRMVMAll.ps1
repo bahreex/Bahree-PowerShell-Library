@@ -3,7 +3,8 @@
     Asynchronously Stop all or specific Azure VMs in an Azure Subscription
 
 .DESCRIPTION
-    This script asynchronously Stops either all Azure VMs in an Azure Subscription, or all Azure VMs in one or more specified Resource Groups, or a specific Azure VM.
+    This script asynchronously Stops either all Azure VMs in an Azure Subscription, or all Azure VMs in one or more specified Resource Groups, or a specific Azure VM. The choice around which VMs to stop
+    depends on the parameters provided. This script has a dependency on the "Get-AzureRMVMPowerState.ps1" script, which it calls to check each VMs Power State before tryign to stop it.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VMs you want to remote Into. Specifying just the Resource Group without the $VMName parameter, will consider all VMs in this specified Resource Group
@@ -80,7 +81,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
                         elseif($VMState -eq "running" -Or $VMState -eq "starting") {
                             Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is either already Started or Starting."
                             $retval = Stop-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob -Force
-                            $jobQ.Add($retval)
+                            $jobQ.Add($retval) > $null
                         }
                         elseif($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
                             Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Skipping."
@@ -133,7 +134,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
                     elseif($VMState -eq "running" -Or $VMState -eq "starting") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is either already Started or Starting."
                         $retval = Stop-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -AsJob -Force
-                        $jobQ.Add($retval)
+                        $jobQ.Add($retval) > $null
                     }
                     elseif($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is in a transient state of Stopping or Deallocating. Skipping."
@@ -175,7 +176,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
             elseif($VMState -eq "running" -Or $VMState -eq "starting") {
                 Write-Verbose "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is either already Started or Starting."
                 $retval = Stop-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMBaseName -AsJob -Force
-                $jobQ.Add($retval)
+                $jobQ.Add($retval) > $null
             }
             elseif($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
                 Write-Verbose "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is in a transient state of Stopping or Deallocating. Skipping."
@@ -200,23 +201,22 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
     return
 }
 
-$statusCount = 0
+$jobStatus = 0
 
-while ($statusCount -eq 0)
+while ($jobStatus -ne $jobQ.Count)
 { 
-    $listStatus = 0
-
     foreach ($job in $jobQ)
     {
-        if ($job.Status -eq "Completed")
+        if ($job.State -eq "Completed")
         {
-            $listStatus++
+            Remove-Job $job.Id
+            $jobStatus++
+            continue
         }
     }
 
-    if($listStatus -eq $jobQ.Count)
+    if( $jobStatus -eq $jobQ.Count)
     {
-        $statusCount = 1
-        Write-Information "All VMs have been started!"
+        Write-Information "All VMs have been stopped"
     }
 }

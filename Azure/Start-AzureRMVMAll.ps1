@@ -3,7 +3,8 @@
     Asynchronously start all or specific Azure VMs in an Azure Subscription
 
 .DESCRIPTION
-    This script asynchronously starts either all Azure VMs in an Azure Subscription, or all Azure VMs in one or more specified Resource Groups, or a specific Azure VM.
+    This script asynchronously starts either all Azure VMs in an Azure Subscription, or all Azure VMs in one or more specified Resource Groups, or a specific Azure VM. The choice around which VMs to start
+    depends on the parameters provided. This script has a dependency on the "Get-AzureRMVMPowerState.ps1" script, which it calls to check each VMs Power State before tryign to start it.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VMs you want to remote Into. Specifying just the Resource Group without the $VMName parameter, will consider all VMs in this specified Resource Group
@@ -14,6 +15,7 @@
 .EXAMPLE
     Start-AzureRMVMAll.ps1
     Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1"
+    Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1,RG2,RG3"
     Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1" -VMName "VM01"
     
 .Notes
@@ -30,11 +32,11 @@
 [CmdletBinding()]
 param(
  
-    [Parameter()]
+    [Parameter(Mandatory=$false)]
     [String[]]$ResourceGroupName,
     
-    [Parameter()]
-    [String]$VMName	
+    [Parameter(Mandatory=$false)]
+    [String]$VMName
 )
 
 if (!(Get-AzureRmContext).Account){
@@ -76,7 +78,15 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
                         {
                             Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently Deallocated/Stopepd. Starting VM..."
                             $retval = Start-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob
-                            $jobQ.Add($retval)
+                            $jobQ.Add($retval) > $null
+                        }
+                        elseif($VMState -eq "running" -Or $VMState -eq "starting") {
+                            Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is either already Started or Starting."
+                            continue
+                        }
+                        elseif($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
+                            Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Hence, cannot start VM in between the process."
+                            continue
                         }
                     }
                     else {
@@ -121,7 +131,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
                     {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is currently Deallocated/Stopepd. Starting VM..."
                         $retval = Start-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -AsJob
-                        $jobQ.Add($retval)
+                        $jobQ.Add($retval) > $null
                     }
                     elseif($VMState -eq "running" -Or $VMState -eq "starting") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is either already Started or Starting."
@@ -164,7 +174,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
             {
                 Write-Verbose "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is currently Deallocated/Stopepd. Starting VM..."
                 $retval = Start-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMBaseName -AsJob
-                $jobQ.Add($retval)
+                $jobQ.Add($retval) > $null
             }
         }
         else {
@@ -185,23 +195,22 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
     return
 }
 
-$statusCount = 0
+$jobStatus = 0
 
-while ($statusCount -eq 0)
+while ($jobStatus -ne $jobQ.Count)
 { 
-    $listStatus = 0
-
     foreach ($job in $jobQ)
     {
-        if ($job.Status -eq "Completed")
+        if ($job.State -eq "Completed")
         {
-            $listStatus++
+            Remove-Job $job.Id
+            $jobStatus++
+            continue
         }
     }
 
-    if($listStatus -eq $jobQ.Count)
+    if( $jobStatus -eq $jobQ.Count)
     {
-        $statusCount = 1
         Write-Information "All VMs have been started!"
     }
 }
