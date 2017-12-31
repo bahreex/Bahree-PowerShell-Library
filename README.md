@@ -1,4 +1,4 @@
-# Bahree-PS-Library
+# Bahree-PowerShell-Library
 
 _**Library of various PowerShell scripts/modules created for automating different tasks across Cloud, On-Premises, and Devices**_
 
