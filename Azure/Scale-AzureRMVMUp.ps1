@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS 
-    Lets you Scale Up any Azure VM from its current size to a new size.
+    Lets you Scale Up any Azure RM VM from its current size to a new size.
 
 .DESCRIPTION
-    This script lets you Scale Up any Azure VM from its current Size to a new size that you specify. By default the new size to scale is Immediately after the current size
+    This script lets you Scale Up any Azure RM VM from its current Size to a new size that you specify. By default the new size to scale is Immediately after the current size
     in the Size Table published by Microsoft, which means the SizeStep parameter with value 1. However, if you specify another value for SizeStep parameter, which should be
     greater than your current VM size number in the Size Table, your VM will be scaled up to that Size in the Size table corresponding to that number. If your VM is already
     at the last size of the VM family, you will not be able to scale up the VM any further as cross-family resizing is not allowed by Microsoft Azure. Since Microsoft does 

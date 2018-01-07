@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS 
-    Asynchronously Stop all or specific Azure VMs in an Azure Subscription
+    Asynchronously Stop all or specific Azure RM VMs in an Azure Subscription
 
 .DESCRIPTION
-    This script asynchronously Stops either all Azure VMs in an Azure Subscription, or all Azure VMs in one or more specified Resource Groups, or a specific Azure VM. The choice around which VMs to stop
+    This script asynchronously Stops either all Azure RM VMs in an Azure Subscription, or all Azure RM VMs in one or more specified Resource Groups, or a specific Azure RM VM. The choice around which VMs to stop
     depends on the parameters provided. This script has a dependency on the "Get-AzureRMVMPowerState.ps1" script, which it calls to check each VMs Power State before tryign to stop it.
 
 .PARAMETER ResourceGroupName

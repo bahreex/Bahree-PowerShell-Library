@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS 
-    Lets you Increase the Data Disk Size for a VM.
+    Lets you Increase the Data Disk Size for an Azure RM VM.
 
 .DESCRIPTION
     This script lets you Increase the Data Disk size for a VM. Data Disk Size reduction is not supported by Azure. It supports Data Disk resizing for both Managed and Unmanaged disks.

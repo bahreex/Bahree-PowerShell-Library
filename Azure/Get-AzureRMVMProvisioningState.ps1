@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS 
-    Gets you the current Provisioning State of a VM.
+    Gets you the current Provisioning State of an Azure RM VM.
 
 .DESCRIPTION
-    This script returns to you current Provisioning State of a VM.
+    This script returns to you current Provisioning State of an Azure RM VM.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VM

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS 
-    Lets you Increase the OS Disk Size for a VM.
+    Lets you Increase the OS Disk Size for an Azure RM VM.
 
 .DESCRIPTION
     This script lets you Increase the OS Disk size for a VM. OS Disk Size reduction is not supported by Azure. It supports OS Disk resizing for both Managed and Unmanaged disks.
