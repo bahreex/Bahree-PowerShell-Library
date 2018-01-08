@@ -13,6 +13,9 @@ _**Library of various PowerShell scripts/modules created for automating differen
 - **Start-AzureRMVMAll.ps1** - Asynchronously starts all Azure RM VMs in a Subscription or in one or more Resource Groups, or a specific VM
 - **Stop-AzureRMVMAll.ps1** - Asynchronously stops all Azure RM VMs in a Subscription, or in one or more Resource Groups, or a specific VM
 - **Extend-AADAccessTokenLifetime.ps1** - Lets you change the default lifetime of the Azure AD Access Token
+- **Nuke-AllAzureRMResources.ps1** - Lets you asynchronously destroy/nuke all Azure RM resources in an Azure Subscription.
+
+## Runbooks
 
 ## General
 
