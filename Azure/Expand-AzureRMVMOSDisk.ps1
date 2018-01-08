@@ -3,7 +3,9 @@
     Lets you Increase the OS Disk Size for an Azure RM VM.
 
 .DESCRIPTION
-    This script lets you Increase the OS Disk size for a VM. OS Disk Size reduction is not supported by Azure. It supports OS Disk resizing for both Managed and Unmanaged disks.
+    This script lets you Increase the OS Disk size for a VM. OS Disk Size reduction is not supported by Azure. It 
+    supports OS Disk resizing for both Managed and Unmanaged disks. You need to be already logged into your Azure 
+    account through PowerShell before calling this script.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VM, whose OS Disk you want to resize
@@ -15,7 +17,7 @@
     New Size of OS Disk
 
 .EXAMPLE
-    Expand-AzureRMVMOSDisk -ResourceGroupName "RG1" -VMName "VM01" -NewOSDiskSize 1023 
+    .\Expand-AzureRMVMOSDisk -ResourceGroupName "RG1" -VMName "VM01" -NewOSDiskSize 1023 
     
 .Notes
     Author: Arjun Bahree

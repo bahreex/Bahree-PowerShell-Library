@@ -3,7 +3,9 @@
     Lets you Increase the Data Disk Size for an Azure RM VM.
 
 .DESCRIPTION
-    This script lets you Increase the Data Disk size for a VM. Data Disk Size reduction is not supported by Azure. It supports Data Disk resizing for both Managed and Unmanaged disks.
+    This script lets you Increase the Data Disk size for a VM. Data Disk Size reduction is not supported by Azure. It 
+    supports Data Disk resizing for both Managed and Unmanaged disks. You need to be already logged into your Azure 
+    account through PowerShell before calling this script.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VM, whose Data Disk you want to resize
@@ -18,7 +20,7 @@
     New Size of the Data Disk
 
 .EXAMPLE
-    Expand-AzureRMVMDataDisk -ResourceGroupName "RG1" -VMName "VM01" -DataDiskName "disk1234" -NewDataDiskSize 1023 
+    .\Expand-AzureRMVMDataDisk -ResourceGroupName "RG1" -VMName "VM01" -DataDiskName "disk1234" -NewDataDiskSize 1023 
     
 .Notes
     Author: Arjun Bahree

@@ -3,7 +3,9 @@
     Lets you change the default lifetime of the Azure AD Access Token
 
 .DESCRIPTION
-    This script lets you change the default lifetime of the Azure AD Access Token from 60 minutes to another duration. The maximum allowed lifetime duration for Azure AD Access Token is 24 hours (23:59)
+    This script lets you change the default lifetime of the Azure AD Access Token from 60 minutes to another duration. 
+    The maximum allowed lifetime duration for Azure AD Access Token is 24 hours (23:59). You need to be already 
+    logged into your Azure account through PowerShell before calling this script.
 
 .PARAMETER PolicyName
     Name of the Azure AD Policy that will be set within the Subscription
@@ -12,7 +14,7 @@
     The new time duration you want to extend the Azure AD Access Token lifetime to. This should be a DateTime object or a string representing the duration in Hours:Minutes format
 
 .EXAMPLE
-    Extend-AADAccessTokenLifetime.ps1 -PolicyName "Test-Policy" -PolicyMaxLife "23:59"
+    .\Extend-AADAccessTokenLifetime.ps1 -PolicyName "Test-Policy" -PolicyMaxLife "23:59"
     
 .Notes
     Author: Arjun Bahree

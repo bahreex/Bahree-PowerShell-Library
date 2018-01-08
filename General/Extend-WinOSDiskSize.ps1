@@ -7,10 +7,10 @@
     This script is particularly useful for extending the OS Drive partition for Windows based Azure VM's, after the VM OS Disk size has been Increased from outside the VM using PowerShell
     or Azure Portal. This is so because the Increase in size done for the VM OS Disk from outside does not automatically get added to the OS Drive partition, and shows as unallocated
     space on the OS Disk of the VM. You will have to manually extend the OS Drive partition from within the VM OS to add the unallocated space to the OS partition. This
-    script helps to automate the same process end-to-end.
+    script helps to automate the same process end-to-end. You need to be already logged into your Azure account through PowerShell before calling this script.
 
 .EXAMPLE
-    Extend-WinOSDiskSize.ps1
+    .\Extend-WinOSDiskSize.ps1
     
 .Notes
     Author: Arjun Bahree

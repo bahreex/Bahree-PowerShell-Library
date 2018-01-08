@@ -3,7 +3,8 @@
     Gets you the current Provisioning State of an Azure RM VM.
 
 .DESCRIPTION
-    This script returns to you current Provisioning State of an Azure RM VM.
+    This script returns to you current Provisioning State of an Azure RM VM. You need to be already logged into your 
+    Azure account through PowerShell before calling this script.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VM
@@ -12,7 +13,7 @@
     Name of the VM whose Provisioning State you want to retrieve
 
 .EXAMPLE
-    Get-AzureRMVMProvisioningState.ps1 -ResourceGroupName "RG1" -VMName "VM01"
+    .\Get-AzureRMVMProvisioningState.ps1 -ResourceGroupName "RG1" -VMName "VM01"
     
 .Notes
 

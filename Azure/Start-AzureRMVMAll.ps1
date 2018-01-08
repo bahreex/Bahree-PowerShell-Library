@@ -5,6 +5,7 @@
 .DESCRIPTION
     This script asynchronously starts either all Azure RM VMs in an Azure Subscription, or all Azure RM VMs in one or more specified Resource Groups, or a specific Azure RM VM. The choice around which VMs to start
     depends on the parameters provided. This script has a dependency on the "Get-AzureRMVMPowerState.ps1" script, which it calls to check each VMs Power State before tryign to start it.
+    You need to be already logged into your Azure account through PowerShell before calling this script.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VMs you want to remote Into. Specifying just the Resource Group without the $VMName parameter, will consider all VMs in this specified Resource Group
@@ -13,10 +14,10 @@
     Name of the VM you want to remote Into. this parameter cannot be specified without it's Resource group in the $ResourceGroupName parameter, or else will throw error  
 
 .EXAMPLE
-    Start-AzureRMVMAll.ps1
-    Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1"
-    Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1,RG2,RG3"
-    Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1" -VMName "VM01"
+    .\Start-AzureRMVMAll.ps1
+    .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1"
+    .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1,RG2,RG3"
+    .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1" -VMName "VM01"
     
 .Notes
     Author: Arjun Bahree
