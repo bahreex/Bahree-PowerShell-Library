@@ -15,7 +15,7 @@ _**Library of various PowerShell scripts/modules created for automating differen
 - **Extend-AADAccessTokenLifetime.ps1** - Lets you change the default lifetime of the Azure AD Access Token
 - **Nuke-AllAzureRMResources.ps1** - Lets you asynchronously destroy/nuke all Azure RM resources in an Azure Subscription.
 
-## Runbooks
+## Azure Automation Runbooks
 
 ## General
 
