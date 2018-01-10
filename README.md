@@ -17,8 +17,12 @@ _**Library of various PowerShell scripts/modules created for automating differen
 
 ## Azure Automation Runbooks
 
-- **Start-AzureRMVMAllRB.ps1** - Asynchronously starts all Azure RM VMs in a Subscription or in one or more Resource Groups, or a specific VM from within an Azure Automation account
-- **Stop-AzureRMVMAllRB.ps1** - Asynchronously stops all Azure RM VMs in a Subscription, or in one or more Resource Groups, or a specific VM from within an Azure Automation account
+- **Start-AzureRMVMAllRunbook.ps1** - Asynchronously starts all Azure RM VMs in a Subscription or in one or more Resource Groups, or a specific VM from within an Azure Automation account
+- **Stop-AzureRMVMAllRunbook.ps1** - Asynchronously stops all Azure RM VMs in a Subscription, or in one or more Resource Groups, or a specific VM from within an Azure Automation account
+- **Expand-AzureRMVMOSDiskRunbook.ps1** - Increase the OS Disk size of an Azure RM VM. Supports both Managed and Unmanaged Disks. Disk size reduction not supported by Azure.
+- **Expand-AzureRMVMDataDiskRunbook.ps1** - Increase a particular Data Disk size of an Azure RM VM. Supports both Managed and Unmanaged Disks. Disk size reduction not supported by Azure.
+- **Get-AzureRMVMPowerStateRunbook.ps1** - Get the current Power State of an Azure RM VM.
+- **Get-AzureRMVMProvisioningStateRunbook.ps1** - Get the current Provisioning State of an Azure RM VM.
 
 ## General
 
