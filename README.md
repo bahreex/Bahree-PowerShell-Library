@@ -17,8 +17,8 @@ _**Library of various PowerShell scripts/modules created for automating differen
 
 ## Azure Automation Runbooks
 
-- **Start-AzureRMVMAllRunbook.ps1** - Asynchronously starts all Azure RM VMs in a Subscription or in one or more Resource Groups, or a specific VM from within an Azure Automation account
-- **Stop-AzureRMVMAllRunbook.ps1** - Asynchronously stops all Azure RM VMs in a Subscription, or in one or more Resource Groups, or a specific VM from within an Azure Automation account
+- **Start-AzureRMVMAllRB.ps1** - Asynchronously starts all Azure RM VMs in a Subscription or in one or more Resource Groups, or a specific VM from within an Azure Automation account
+- **Stop-AzureRMVMAllRB.ps1** - Asynchronously stops all Azure RM VMs in a Subscription, or in one or more Resource Groups, or a specific VM from within an Azure Automation account
 
 ## General
 
