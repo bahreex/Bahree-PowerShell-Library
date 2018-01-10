@@ -24,7 +24,7 @@
     corresponding to the specified number.
 
 .EXAMPLE
-    .\Scale-AzureRMVMUp.ps1
+    .\Scale-AzureRMVMUp.ps1 -ResourceGroupName "rg-100" -VMName "vm100" -SizeStep 2
     
 .Notes
     Author: Arjun Bahree

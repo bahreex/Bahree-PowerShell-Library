@@ -15,7 +15,9 @@
 
 .EXAMPLE
     .\Stop-AzureRMVMAll.ps1
+.EXAMPLE
     .\Stop-AzureRMVMAll.ps1 -ResourceGroupName "RG1"
+.EXAMPLE
     .\Stop-AzureRMVMAll.ps1 -ResourceGroupName "RG1" -VMName "VM01"
     
 .Notes

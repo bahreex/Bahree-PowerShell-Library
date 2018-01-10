@@ -15,8 +15,11 @@
 
 .EXAMPLE
     .\Start-AzureRMVMAll.ps1
+.EXAMPLE
     .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1"
+.EXAMPLE
     .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1,RG2,RG3"
+.EXAMPLE
     .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1" -VMName "VM01"
     
 .Notes
