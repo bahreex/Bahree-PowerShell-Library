@@ -19,7 +19,7 @@
 .EXAMPLE
     .\Start-AzureRMVMAll.ps1 -ResourceGroupName RG1,RG2,RG3
 .EXAMPLE
-    .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1" -VMName "VM01"
+    .\Start-AzureRMVMAll.ps1 -ResourceGroupName RG1 -VMName VM01
     
 .Notes
     Author: Arjun Bahree
@@ -39,13 +39,17 @@ param(
     [String[]]$ResourceGroupName,
     
     [Parameter(Mandatory = $false)]
-    [String]$VMName
+    [String[]]$VMName
 )
 
 if (!(Get-AzureRmContext).Account) {
     Write-Error "You need to be logged into your Azure Subscription using PowerShell cmdlet 'Login-AzureRmAccount'"
     return
-}  
+}
+
+# Create Stopwatch and Start the Timer
+$StopWatch = New-Object -TypeName System.Diagnostics.Stopwatch
+$StopWatch.Start()
 
 [System.Collections.ArrayList]$jobQ = @()
 
@@ -69,7 +73,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
                     $VMBaseName = $vm.Name
 
                     # Get current status of the VM
-                    $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
+                    $vmstatus = Get-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -Status
 
                     # Extract current Power State of the VM
                     $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
@@ -121,7 +125,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
                 $VMBaseName = $vm.Name
 
                 # Get current status of the VM
-                $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
+                $vmstatus = Get-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -Status
 
                 # Extract current Power State of the VM
                 $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
@@ -166,7 +170,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
         $VMBaseName = $vm.Name
 
         # Get current status of the VM
-        $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
+        $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMBaseName -Status
 
         # Extract current Power State of the VM
         $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
@@ -197,18 +201,8 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
     return
 }
 
-$jobStatus = 0
+# Stop the Timer
+$StopWatch.Stop()
 
-while ($jobStatus -ne $jobQ.Count) { 
-    foreach ($job in $jobQ) {
-        if ($job.State -eq "Completed") {
-            Remove-Job $job.Id
-            $jobStatus++
-            continue
-        }
-    }
-
-    if ( $jobStatus -eq $jobQ.Count) {
-        Write-Information "All VMs have been started!"
-    }
-}
+# Display the Elapsed Time
+Write-Verbose "Total Execution Time for Starting All Target VMs:" + $StopWatch.Elapsed.ToString()
