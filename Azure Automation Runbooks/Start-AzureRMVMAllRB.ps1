@@ -15,13 +15,13 @@
     Name of the VM you want to remote Into. this parameter cannot be specified without it's Resource group in the $ResourceGroupName parameter, or else will throw error  
 
 .EXAMPLE
-    .\Start-AzureRMVMAll.ps1
+    .\Start-AzureRMVMAllRB.ps1
 .EXAMPLE
-    .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1"
+    .\Start-AzureRMVMAllRB.ps1 -ResourceGroupName "RG1"
 .EXAMPLE
-    .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1,RG2,RG3"
+    .\Start-AzureRMVMAllRB.ps1 -ResourceGroupName "RG1,RG2,RG3"
 .EXAMPLE
-    .\Start-AzureRMVMAll.ps1 -ResourceGroupName "RG1" -VMName "VM01"
+    .\Start-AzureRMVMAllRB.ps1 -ResourceGroupName "RG1" -VMName "VM01"
     
 .Notes
     Author: Arjun Bahree
@@ -93,7 +93,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
                 {
                     $VMBaseName = $vm.Name
 
-                    $VMState = .\Get-AzureRMVMPowerState.ps1 -ResourceGroupName $RGBaseName -VMName $VMBaseName
+                    $VMState = .\Get-AzureRMVMPowerStateRB.ps1 -ResourceGroupName $RGBaseName -VMName $VMBaseName
                     
                     if ($VMState)
                     {
@@ -146,7 +146,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
             {
                 $VMBaseName = $vm.Name
 
-                $VMState = .\Get-AzureRMVMPowerState.ps1 -ResourceGroupName $rg -VMName $VMBaseName -State "PowerState"
+                $VMState = .\Get-AzureRMVMPowerStateRB.ps1 -ResourceGroupName $rg -VMName $VMBaseName -State "PowerState"
                 
                 if ($VMState)
                 {
@@ -189,7 +189,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
     {    
         $VMBaseName = $vm.Name
 
-        $VMState = .\Get-AzureRMVMPowerState.ps1 -ResourceGroupName $ResourceGroupName -VMName $VMBaseName -State "PowerState"
+        $VMState = .\Get-AzureRMVMPowerStateRB.ps1 -ResourceGroupName $ResourceGroupName -VMName $VMBaseName -State "PowerState"
         
         if ($VMState)
         {

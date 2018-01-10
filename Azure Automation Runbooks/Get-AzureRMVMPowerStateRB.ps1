@@ -13,7 +13,7 @@
     Name of the VM whose Power State you want to retrieve
 
 .EXAMPLE
-    .\Get-AzureRMVMPowerState.ps1 -ResourceGroupName "RG1" -VMName "VM01"
+    .\Get-AzureRMVMPowerStateRB.ps1 -ResourceGroupName "RG1" -VMName "VM01"
     
 .Notes
 
