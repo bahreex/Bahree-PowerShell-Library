@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS 
-    Gets you the current Power State of an Azure RM VM.
+    Gets you the current Power State of an Azure RM VM as a Runbook from within an Azure Automation Account.
 
 .DESCRIPTION
-    This script returns to you the current Power State of an Azure RM VM. You need to be already logged into your Azure 
-    account through PowerShell before calling this script.
+    This Runbook returns to you the current Power State of an Azure RM VM. You need to execute this Runbook through a 
+    'Azure Run As account (service principal)' Identity from an Azure Automation account.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VM
@@ -47,9 +47,27 @@ param(
     [String]$VMName
 )
 
-if (!(Get-AzureRmContext).Account){
-    Write-Error "You need to be logged into your Azure Subscription."
-    return
+$connectionName = "AzureRunAsConnection"
+try
+{
+    # Get the connection "AzureRunAsConnection "
+    $servicePrincipalConnection=Get-AutomationConnection -Name $connectionName         
+
+    Add-AzureRmAccount `
+        -ServicePrincipal `
+        -TenantId $servicePrincipalConnection.TenantId `
+        -ApplicationId $servicePrincipalConnection.ApplicationId `
+        -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
+}
+catch {
+    if (!$servicePrincipalConnection)
+    {
+        $ErrorMessage = "Connection $connectionName not found."
+        throw $ErrorMessage
+    } else{
+        Write-Error -Message $_.Exception
+        throw $_.Exception
+    }
 }
 
 # Get the VM in context

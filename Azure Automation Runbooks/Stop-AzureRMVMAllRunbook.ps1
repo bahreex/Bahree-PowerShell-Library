@@ -1,11 +1,10 @@
 <#
 .SYNOPSIS 
-    Asynchronously Stop all or specific Azure RM VMs in an Azure Subscription as a Runbook from within an Azure Automation Account
+    Asynchronously Stops all or specific Azure RM VMs in an Azure Subscription as a Runbook from within an Azure Automation Account
 
 .DESCRIPTION
-    This script asynchronously Stops either all Azure RM VMs in an Azure Subscription, or all Azure RM VMs in one or more specified Resource Groups, or a specific Azure RM VM. The choice around which VMs to stop
-    depends on the parameters provided. This Runbook has a dependency on the "Get-AzureRMVMPowerState.ps1" Runbook, which it calls to check each VMs Power State before trying to stop it.
-    You need to execute this Runbook through 'Azure Run As account (service principal)'.
+    This Runbook asynchronously Stops either all Azure RM VMs in an Azure Subscription, or all Azure RM VMs in one or more specified Resource Groups, or a specific Azure RM VM. The choice around which VMs to stop
+    depends on the parameters provided. You need to execute this Runbook through a 'Azure Run As account (service principal)' Identity from an Azure Automation account.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VMs you want to remote Into. Specifying just the Resource Group without the $VMName parameter will consider all VMs in this specified Resource Group. You can also specify
@@ -17,7 +16,9 @@
 .EXAMPLE
     .\Stop-AzureRMVMAllRB.ps1
 .EXAMPLE
-    .\Stop-AzureRMVMAllRB.ps1 -ResourceGroupName "RG1,RG2,RG3"
+    .\Stop-AzureRMVMAll.ps1 -ResourceGroupName RG1
+.EXAMPLE
+    .\Stop-AzureRMVMAllRB.ps1 -ResourceGroupName RG1,RG2,RG3
 .EXAMPLE
     .\Stop-AzureRMVMAllRB.ps1 -ResourceGroupName "RG1" -VMName "VM01"
     
@@ -43,10 +44,9 @@ param(
 )
 
 $connectionName = "AzureRunAsConnection"
-try
-{
+try {
     # Get the connection "AzureRunAsConnection "
-    $servicePrincipalConnection=Get-AutomationConnection -Name $connectionName         
+    $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
 
     Add-AzureRmAccount `
         -ServicePrincipal `
@@ -55,11 +55,11 @@ try
         -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
 }
 catch {
-    if (!$servicePrincipalConnection)
-    {
+    if (!$servicePrincipalConnection) {
         $ErrorMessage = "Connection $connectionName not found."
         throw $ErrorMessage
-    } else{
+    }
+    else {
         Write-Error -Message $_.Exception
         throw $_.Exception
     }
@@ -68,44 +68,44 @@ catch {
 [System.Collections.ArrayList]$jobQ = @()
 
 # Check if both Resource Groups and VM Name params are not passed
-If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameters.ContainsKey('VMName'))
-{
+If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameters.ContainsKey('VMName')) {
     # Get a list of all the Resource Groups in the Azure Subscription
     $RGs = Get-AzureRmResourceGroup 
     
     # Check if there are Resource Groups in the current Azure Subscription
-    if ($RGs)
-    {        
+    if ($RGs) {        
         # Iterate through all the Resource Groups in the Azure Subscription        
-        foreach ($rg in $RGs)
-        {
+        foreach ($rg in $RGs) {
             $RGBaseName = $rg.ResourceGroupName
             
             # Get a list of all the VMs in the specific Resource Group for this Iteration
             $VMs = Get-AzureRmVm -ResourceGroupName $RGBaseName
 
-            if ($VMs)
-            {
+            if ($VMs) {
                 # Iterate through all the VMs within the specific Resource Group for this Iteration
-                foreach ($vm in $VMs)
-                {
+                foreach ($vm in $VMs) {
                     $VMBaseName = $vm.Name
 
-                    $VMState = .\Get-AzureRMVMPowerStateRB.ps1 -ResourceGroupName $RGBaseName -VMName $VMBaseName
+                    # Get current status of the VM
+                    $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
+
+                    # Extract current Power State of the VM
+                    $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
                     
-                    if ($VMState)
-                    {
-                        if ($VMState -eq "deallocated" -Or $VMState -eq "stopped")
-                        {
+                    # Return the Power State
+                    $VMState = $powerState.ToUpper()
+                    
+                    if ($VMState) {
+                        if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
                             Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently already Deallocated/Stopped. Skipping."
                             continue
                         }
-                        elseif($VMState -eq "running" -Or $VMState -eq "starting") {
+                        elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
                             Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is either already Started or Starting."
                             $retval = Stop-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob -Force
                             $jobQ.Add($retval) > $null
                         }
-                        elseif($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
+                        elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
                             Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Skipping."
                             continue
                         }
@@ -116,91 +116,92 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
                     }
                 }
             }
-            else
-            {
+            else {
                 Write-Verbose "There are no VMs in the Resource Group {$RGBaseName}. Continuing with next Resource Group, if any."
                 continue
             }
         }
     }
-    else
-    {
+    else {
         Write-Error "There are no Resource Groups in the Azure Subscription {$AzureSubscriptionId}. Aborting..."
         return $null
     }
 }
 # Check if only Resource Group param is passed, but not the VM Name param
-Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameters.ContainsKey('VMName'))
-{
-    foreach ($rg in $ResourceGroupName)
-    {
+Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameters.ContainsKey('VMName')) {
+    foreach ($rg in $ResourceGroupName) {
         # Get a list of all the VMs in the specific Resource Group
         $VMs = Get-AzureRmVm -ResourceGroupName $rg
         
-        if ($VMs)
-        {
-        # Iterate through all the VMs within the specific Resource Group for this Iteration
-            foreach ($vm in $VMs)
-            {
+        if ($VMs) {
+            # Iterate through all the VMs within the specific Resource Group for this Iteration
+            foreach ($vm in $VMs) {
                 $VMBaseName = $vm.Name
 
-                $VMState = .\Get-AzureRMVMPowerStateRB.ps1 -ResourceGroupName $rg -VMName $VMBaseName -State "PowerState"
+                # Get current status of the VM
+                $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
+
+                # Extract current Power State of the VM
+                $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
+
+                # Return the Power State
+                $VMState = $powerState.ToUpper()
                 
-                if ($VMState)
-                {
-                    if ($VMState -eq "deallocated" -Or $VMState -eq "stopped")
-                    {
+                if ($VMState) {
+                    if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is currently already Deallocated/Stopped. Skipping."
                         continue
                     }
-                    elseif($VMState -eq "running" -Or $VMState -eq "starting") {
+                    elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is either already Started or Starting."
                         $retval = Stop-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -AsJob -Force
                         $jobQ.Add($retval) > $null
                     }
-                    elseif($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
+                    elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is in a transient state of Stopping or Deallocating. Skipping."
                         continue
                     }
                 }
-                else{
+                else {
                     Write-Verbose "Unable to determine PowerState of the VM {$VMBaseName} in Resource Group {$rg}. Hence, cannot start the VM. Skipping to next VM..."
                     continue
                 }
             }
         }
-        else
-        {
+        else {
             Write-Verbose "There are no Virtual Machines in Resource Group {$rg}. Skipping to next Resource Group"
             continue
         }
     }
 }
 # Check if both Resource Group and VM Name params are passed
-Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParameters.ContainsKey('VMName'))
-{
+Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParameters.ContainsKey('VMName')) {
     # Get the specified VM in the specific Resource Group
     $vm = Get-AzureRmVm -ResourceGroupName $ResourceGroupName -Name $VMName
 
-    if ($vm)
-    {    
+    if ($vm) {    
         $VMBaseName = $vm.Name
 
-        $VMState = .\Get-AzureRMVMPowerStateRB.ps1 -ResourceGroupName $ResourceGroupName -VMName $VMBaseName -State "PowerState"
+        # Get current status of the VM
+        $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
+
+        # Extract current Power State of the VM
+        $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
         
-        if ($VMState)
-        {
-            if ($VMState -eq "deallocated" -Or $VMState -eq "stopped")
-            {
+        # Return the Power State
+        $VMState = $powerState.ToUpper()
+        
+        if ($VMState) {
+            if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
                 Write-Verbose "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is currently already Deallocated/Stopped. Skipping."
                 continue
             }
-            elseif($VMState -eq "running" -Or $VMState -eq "starting") {
+            elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
                 Write-Verbose "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is either already Started or Starting."
                 $retval = Stop-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMBaseName -AsJob -Force
                 $jobQ.Add($retval) > $null
             }
-            elseif($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
+            elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
                 Write-Verbose "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is in a transient state of Stopping or Deallocating. Skipping."
                 continue
             }
@@ -210,35 +211,29 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
             continue
         }
     }
-    else
-    {
+    else {
         Write-Error "There is no Virtual Machine named {$VMName} in Resource Group {$ResourceGroupName}. Aborting..."
         return
     }
 }
 # Check if Resource Group param is not passed, but VM Name param is passed
-Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParameters.ContainsKey('VMName'))
-{
+Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParameters.ContainsKey('VMName')) {
     Write-Error "VM Name parameter cannot be specified alone, without specifying its Resource Group Name parameter also. Aborting..."
     return
 }
 
 $jobStatus = 0
 
-while ($jobStatus -ne $jobQ.Count)
-{ 
-    foreach ($job in $jobQ)
-    {
-        if ($job.State -eq "Completed")
-        {
+while ($jobStatus -ne $jobQ.Count) { 
+    foreach ($job in $jobQ) {
+        if ($job.State -eq "Completed") {
             Remove-Job $job.Id
             $jobStatus++
             continue
         }
     }
 
-    if( $jobStatus -eq $jobQ.Count)
-    {
+    if ( $jobStatus -eq $jobQ.Count) {
         Write-Information "All VMs have been stopped"
     }
 }
