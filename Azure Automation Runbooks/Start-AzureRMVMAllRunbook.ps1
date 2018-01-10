@@ -33,7 +33,6 @@
     Platform: Windows
 #>
 
-[CmdletBinding()]
 param(
  
     [Parameter(Mandatory = $false)]

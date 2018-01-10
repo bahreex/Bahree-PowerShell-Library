@@ -32,7 +32,7 @@
     PS Version: 5.1
     Platform: Windows
 #>
-[CmdletBinding()]
+
 param(
 
     [Parameter(Mandatory=$true)] 
