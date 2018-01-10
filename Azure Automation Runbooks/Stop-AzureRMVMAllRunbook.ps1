@@ -48,7 +48,7 @@ try {
     # Get the connection "AzureRunAsConnection "
     $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
 
-    Add-AzureRmAccount `
+    $account = Add-AzureRmAccount `
         -ServicePrincipal `
         -TenantId $servicePrincipalConnection.TenantId `
         -ApplicationId $servicePrincipalConnection.ApplicationId `
@@ -64,6 +64,10 @@ catch {
         throw $_.Exception
     }
 }
+
+# Create Stopwatch and Start the Timer
+$StopWatch = New-Object -TypeName System.Diagnostics.Stopwatch
+$StopWatch.Start()
 
 [System.Collections.ArrayList]$jobQ = @()
 
@@ -87,37 +91,37 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
                     $VMBaseName = $vm.Name
 
                     # Get current status of the VM
-                    $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
-
+                    $vmstatus = Get-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -Status
+                    
                     # Extract current Power State of the VM
                     $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
                     
                     # Return the Power State
-                    $VMState = $powerState.ToUpper()
-                    
+                    $VMState = $powerState
+  
                     if ($VMState) {
                         if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
-                            Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently already Deallocated/Stopped. Skipping."
+                            Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently already Deallocated/Stopped. Skipping."
                             continue
                         }
                         elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
-                            Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is either already Started or Starting."
+                            Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is either already Started or Starting."
                             $retval = Stop-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob -Force
                             $jobQ.Add($retval) > $null
                         }
                         elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
-                            Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Skipping."
+                            Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Skipping."
                             continue
                         }
                     }
                     else {
-                        Write-Verbose "Unable to determine PowerState of the VM {$VMBaseName} in Resource Group {$RGBaseName}. Hence, cannot start the VM. Skipping to next VM..."
+                        Write-Output "Unable to determine PowerState of the VM {$VMBaseName} in Resource Group {$RGBaseName}. Hence, cannot start the VM. Skipping to next VM..."
                         continue
                     }
                 }
             }
             else {
-                Write-Verbose "There are no VMs in the Resource Group {$RGBaseName}. Continuing with next Resource Group, if any."
+                Write-Output "There are no VMs in the Resource Group {$RGBaseName}. Continuing with next Resource Group, if any."
                 continue
             }
         }
@@ -139,37 +143,37 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
                 $VMBaseName = $vm.Name
 
                 # Get current status of the VM
-                $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
+                $vmstatus = Get-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -Status
 
                 # Extract current Power State of the VM
                 $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
 
                 # Return the Power State
-                $VMState = $powerState.ToUpper()
+                $VMState = $powerState
                 
                 if ($VMState) {
                     if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
-                        Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is currently already Deallocated/Stopped. Skipping."
+                        Write-Output "The VM {$VMBaseName} in Resource Group {$rg} is currently already Deallocated/Stopped. Skipping."
                         continue
                     }
                     elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
-                        Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is either already Started or Starting."
+                        Write-Output "The VM {$VMBaseName} in Resource Group {$rg} is either already Started or Starting."
                         $retval = Stop-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -AsJob -Force
                         $jobQ.Add($retval) > $null
                     }
                     elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
-                        Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is in a transient state of Stopping or Deallocating. Skipping."
+                        Write-Output "The VM {$VMBaseName} in Resource Group {$rg} is in a transient state of Stopping or Deallocating. Skipping."
                         continue
                     }
                 }
                 else {
-                    Write-Verbose "Unable to determine PowerState of the VM {$VMBaseName} in Resource Group {$rg}. Hence, cannot start the VM. Skipping to next VM..."
+                    Write-Output "Unable to determine PowerState of the VM {$VMBaseName} in Resource Group {$rg}. Hence, cannot start the VM. Skipping to next VM..."
                     continue
                 }
             }
         }
         else {
-            Write-Verbose "There are no Virtual Machines in Resource Group {$rg}. Skipping to next Resource Group"
+            Write-Output "There are no Virtual Machines in Resource Group {$rg}. Skipping to next Resource Group"
             continue
         }
     }
@@ -183,31 +187,31 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
         $VMBaseName = $vm.Name
 
         # Get current status of the VM
-        $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
+        $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMBaseName -Status
 
         # Extract current Power State of the VM
         $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
         
         # Return the Power State
-        $VMState = $powerState.ToUpper()
+        $VMState = $powerState
         
         if ($VMState) {
             if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
-                Write-Verbose "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is currently already Deallocated/Stopped. Skipping."
+                Write-Output "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is currently already Deallocated/Stopped. Skipping."
                 continue
             }
             elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
-                Write-Verbose "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is either already Started or Starting."
+                Write-Output "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is either already Started or Starting."
                 $retval = Stop-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMBaseName -AsJob -Force
                 $jobQ.Add($retval) > $null
             }
             elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
-                Write-Verbose "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is in a transient state of Stopping or Deallocating. Skipping."
+                Write-Output "The VM {$VMBaseName} in Resource Group {$ResourceGroupName} is in a transient state of Stopping or Deallocating. Skipping."
                 continue
             }
         }        
         else {
-            Write-Verbose "Unable to determine PowerState of the VM {$VMBaseName} in Resource Group {$ResourceGroupName}. Hence, cannot start the VM. Skipping to next VM..."
+            Write-Output "Unable to determine PowerState of the VM {$VMBaseName} in Resource Group {$ResourceGroupName}. Hence, cannot start the VM. Skipping to next VM..."
             continue
         }
     }
@@ -222,18 +226,12 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
     return
 }
 
-$jobStatus = 0
+# Stop the Timer
+$StopWatch.Stop()
 
-while ($jobStatus -ne $jobQ.Count) { 
-    foreach ($job in $jobQ) {
-        if ($job.State -eq "Completed") {
-            Remove-Job $job.Id
-            $jobStatus++
-            continue
-        }
-    }
+# Display the Elapsed Time
+Write-Output "Total Execution Time for Stopping All Target VMs:"$StopWatch.Elapsed.ToString()
 
-    if ( $jobStatus -eq $jobQ.Count) {
-        Write-Information "All VMs have been stopped"
-    }
-}
+Get-Job | Wait-Job | Remove-Job
+
+Write-Output "All Target VM's have been stopped Successfully!"
