@@ -142,10 +142,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
                 $vmstatus = Get-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -Status
 
                 # Extract current Power State of the VM
-                $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
-
-                # Return the Power State
-                $VMState = $powerState
+                $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]
                 
                 if ($VMState) {
                     if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
