@@ -30,8 +30,8 @@
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
     Creation Date: 29/Dec/2017
-    Last Revision Date: 29/Dec/2017
-    Version: 1.0
+    Last Revision Date: 11/Jan/2018
+    Version: 2.0
     Development Environment: VS Code IDE
     PS Version: 5.1
     Platform: Windows
@@ -57,66 +57,72 @@ if (!(Get-AzureRmContext).Account){
     Write-Error "You need to be logged into your Azure Subscription using PowerShell cmdlet 'Login-AzureRmAccount'"
     return
 }
+# Create Stopwatch and Start the Timer
+$StopWatch = New-Object -TypeName System.Diagnostics.Stopwatch
+$StopWatch.Start()
  
-function ResizeVM ($rgName, $vmName, $newVMSize)
-{
-    Write-Verbose "Upgrading $vmName to $newVMSize ... this will require a reboot"
+function ResizeVM ($rgName, $vmName, $newVMSize) {
+    Write-Output "Upgrading $vmName to $newVMSize ... this will require a reboot"
     $vmRef = Get-AzureRmVM -ResourceGroupName $rgName -Name $vmName
     $vmRef.HardwareProfile.VmSize = $newVMSize
     Update-AzureRmVM -VM $vmRef -ResourceGroupName $rgName
 }
 
-Write-Verbose "Starting the scale up process"
- 
-$VM = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName
+Write-Output "Starting the VM Scaling-Down Process."
 
-$vSize = $VM.HardwareProfile.VmSize
+$VM = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -ErrorAction SilentlyContinue
 
-$content = (Invoke-WebRequest -Uri "https://gist.githubusercontent.com/bahreex/96a611b5ca05de2df2c3d7f45b11b75d/raw/bf2065fd27171d616b6c2373d58a387a82dff114/Azure-VM-Sizes-29122017.csv").Content
+if ($VM) {
 
-$vmSizes = $content.Split("`r`n")
+    $vSize = $VM.HardwareProfile.VmSize
 
-$vmFamilyList = @()
+    $content = (Invoke-WebRequest -Uri "https://gist.githubusercontent.com/bahreex/96a611b5ca05de2df2c3d7f45b11b75d/raw/bf2065fd27171d616b6c2373d58a387a82dff114/Azure-VM-Sizes-29122017.csv").Content
 
-foreach($line in $vmSizes)
-{
-    $row = $line.split(',');
+    $vmSizes = $content.Split("`r`n")
 
-    if ($row -contains $vSize)
-    {
-        $index = $row.IndexOf($vSize)
+    $vmFamilyList = @()
 
-        $count = 0
+    foreach ($line in $vmSizes) {
+        $row = $line.split(',');
 
-        foreach($subLine in $vmSizes)
-        {
-            $subRow = $subLine.split(',');
+        if ($row -contains $vSize) {
+            $index = $row.IndexOf($vSize)
 
-            if ($count -eq 0)
-            {
-                $vmFamily = $subRow[$index]
-            }
-            else 
-            {
-                if ($subRow[$index])
-                {
-                    $vmFamilyList += $subRow[$index]
+            $count = 0
+
+            foreach ($subLine in $vmSizes) {
+                $subRow = $subLine.split(',');
+
+                if ($count -eq 0) {
+                    $vmFamily = $subRow[$index]
                 }
-            }            
-            $count++
+                else {
+                    if ($subRow[$index]) {
+                        $vmFamilyList += $subRow[$index]
+                    }
+                }            
+                $count++
+            }
+            break 
         }
-        break 
+    }
+
+    $nextSizeIndex = $vmFamilyList.IndexOf($vSize) - $SizeStep
+
+    if ($nextSizeIndex -lt 0) {
+        Write-Output "The VM $($VM.Name) is at the minimum allowed size for the $vmFamily family."   
+    }
+    else {
+        ResizeVM $ResourceGroupName $VMName $vmFamilyList[$nextSizeIndex]
+        Write-Output "The Scaling-Down for VM $($VM.Name) has been completed!"
     }
 }
-
-$nextSizeIndex = $vmFamilyList.IndexOf($vSize) - $SizeStep
-
-if ($nextSizeIndex -lt 0)
-{
-    Write-Verbose "The VM is at the minimum allowed size for the "$vmFamily" family."    
+else {
+    Write-Output "Could not get the VM {$VMName} in the Resource Group {$ResourceGroupName}."
 }
-else 
-{
-    ResizeVM $ResourceGroupName $VMName $vmFamilyList[$nextSizeIndex]
-    Write-Verbose "The VM resizing is finished"
-}
+
+# Stop the Timer
+$StopWatch.Stop()
+
+# Display the Elapsed Time
+Write-Output "Total Execution Time for Scaling Down the VM:" + $StopWatch.Elapsed.ToString()
