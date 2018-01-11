@@ -100,7 +100,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
                     continue
                 }
                 elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
-                    Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is either already Started or Starting."
+                    Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently either already Started or Starting. Stopping..."
                     $retval = Stop-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob -Force
                     $jobQ.Add($retval) > $null
                 }
@@ -155,7 +155,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
                         continue
                     }
                     elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
-                        Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is either already Started or Starting."
+                        Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is currently either already Started or Starting. Stopping..."
                         $retval = Stop-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -AsJob -Force
                         $jobQ.Add($retval) > $null
                     }
@@ -217,7 +217,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
                     continue
                 }
                 elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
-                    Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is either already Started or Starting."
+                    Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently either already Started or Starting. Stopping..."
                     $retval = Stop-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob -Force
                     $jobQ.Add($retval) > $null
                 }
@@ -270,7 +270,7 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
                         continue
                     }
                     elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
-                        Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is either already Started or Starting."
+                        Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently either already Started or Starting. Stopping..."
                         $retval = Stop-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob -Force
                         $jobQ.Add($retval) > $null
                     }
