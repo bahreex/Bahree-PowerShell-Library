@@ -1,5 +1,5 @@
 <#
-.SYNOPSIS 
+.SYNOPSIS
     Asynchronously Stop all or specific Azure RM VMs in an Azure Subscription
 
 .DESCRIPTION
@@ -16,7 +16,7 @@
     the "VMName" parameter, wherein all the VMs specified will be stopped in that specific Resource Group. You cannot
     specify more than one Resource Group Names when combined with the "VMName" parameter.
 
-.PARAMETER VMName    
+.PARAMETER VMName
     Name of the VM you want to Stop. This parameter when specified alone, without the "ResourceGroupName" 
     parameter, can Include one or more VM Names to be stopped across any resource groups in the Azure Subscription. When
     specified with the "ResourceGroupName" parameter, you need to Include one or more VMs in the specified Resource
