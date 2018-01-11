@@ -142,6 +142,13 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
 Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameters.ContainsKey('VMName')) {
 
     foreach ($rg in $ResourceGroupName) {
+
+        $testRG = Get-AzureRmResourceGroup -Name $rg -ErrorAction SilentlyContinue
+        if (!$testRG) {
+            Write-Output "The Resource Group {$rg} does not exist. Skipping."
+            continue            
+        }
+
         # Get a list of all the VMs in the specific Resource Group
         $VMs = Get-AzureRmVm -ResourceGroupName $rg
         
@@ -189,18 +196,29 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
 # Check if both Resource Group and VM Name params are passed
 Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParameters.ContainsKey('VMName')) {
     
+    # You cannot specify Resource Groups more than 1 when both ResourceGroupName and VMName parameters are specified
     if ($ResourceGroupName.Count -gt 1)
     {
         Write-Output "You can only specify a single Resource Group Name value when using both '-ResourceGroupName' and '-VMName' parameters together."
         return
     }
 
+    # Check if Resource Group exists
+    $testRG = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
+
+    if (!$testRG) {
+        Write-Verbose "The Resource Group {$ResourceGroupName} does not exist. Skipping."
+        continue            
+    }
+
+    # Iterate through all VM's specified
     foreach ($vms in $VMName)
     {
         # Get the specified VM in the specific Resource Group
-        $vm = Get-AzureRmVm -ResourceGroupName $ResourceGroupName -Name $vms
+        $vm = Get-AzureRmVm -ResourceGroupName $ResourceGroupName -Name $vms -ErrorAction SilentlyContinue
 
-        if ($vm) {    
+        if ($vm) {
+            
             $VMBaseName = $vm.Name
             $RGBaseName = $vm.ResourceGroupName
 
