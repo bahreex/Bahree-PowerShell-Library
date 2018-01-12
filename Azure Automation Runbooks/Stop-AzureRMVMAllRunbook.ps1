@@ -210,7 +210,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
     $testRG = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
 
     if (!$testRG) {
-        Write-Verbose "The Resource Group {$ResourceGroupName} does not exist. Skipping."
+        Write-Output "The Resource Group {$ResourceGroupName} does not exist. Skipping."
         continue            
     }
 

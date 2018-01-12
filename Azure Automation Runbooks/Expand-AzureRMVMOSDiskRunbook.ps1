@@ -67,7 +67,7 @@ if (!(Get-AzureRmContext).Account) {
     }
 }
 
-Write-Verbose "Getting VM reference..."
+Write-Output "Getting VM reference..."
 # Get the VM in context
 $vm = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName
 
@@ -79,24 +79,24 @@ if ($vm)
         return
     }
 
-    Write-Verbose "Checking if the VM has a Managed disk or Unmanaged disk..."
+    Write-Output "Checking if the VM has a Managed disk or Unmanaged disk..."
     # If VM has Unamanged Disk 
     if (!$vm.StorageProfile.OsDisk.ManagedDisk)
     {   
-        Write-Verbose "The VM has Unmanaged OS Disk."
+        Write-Output "The VM has Unmanaged OS Disk."
 
-        Write-Verbose "Getting VM Status..."
+        Write-Output "Getting VM Status..."
         # Get current status of the VM
         $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
     
-        Write-Verbose "Checking if VM is in a Running State..."
+        Write-Output "Checking if VM is in a Running State..."
         If ($vmstatus.Statuses.Code -contains "PowerState/running")
         {
-            Write-Verbose "Stopping the VM as it is in a Running State..."
+            Write-Output "Stopping the VM as it is in a Running State..."
             $stopVM = Stop-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Force
         }
 
-        Write-Verbose "Changing Unmanaged OS Disk Size..."
+        Write-Output "Changing Unmanaged OS Disk Size..."
         
         # Change the OS Disk Size 
         $vm.StorageProfile.OSDisk.DiskSizeGB = $NewOSDiskSize
@@ -106,20 +106,20 @@ if ($vm)
     }
     else 
     {    
-        Write-Verbose "The VM Has Managed OS Disk."
+        Write-Output "The VM Has Managed OS Disk."
 
-        Write-Verbose "Getting VM Status..."
+        Write-Output "Getting VM Status..."
         # Get current status of the VM
         $vmstatus = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status
     
-        Write-Verbose "Checking if VM is in a Running State..."
+        Write-Output "Checking if VM is in a Running State..."
         If ($vmstatus.Statuses.Code -contains "PowerState/running")
         {
-            Write-Verbose "Stopping the VM as it is in a Running State..."
+            Write-Output "Stopping the VM as it is in a Running State..."
             $stopVM = Stop-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Force
         }
         
-        Write-Verbose "Changing Managed OS Disk Size..."
+        Write-Output "Changing Managed OS Disk Size..."
 
         # Get OS Disk for the VM in context
         $vmDisk = Get-AzureRmDisk -ResourceGroupName $ResourceGroupName -DiskName $vm.StorageProfile.OSDisk.Name
@@ -133,11 +133,11 @@ if ($vm)
 
     If ($stopVM)
     {
-        Write-Verbose "Restart the VM as it was stopped from a Running State..."
+        Write-Output "Restart the VM as it was stopped from a Running State..."
         $startVMJob = Start-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -AsJob
     }
 
-    Write-Verbose "OS Disk size change successful."
+    Write-Output "OS Disk size change successful."
 
 }
 else {
