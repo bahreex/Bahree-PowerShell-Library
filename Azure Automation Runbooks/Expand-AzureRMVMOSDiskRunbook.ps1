@@ -25,7 +25,7 @@
     Creation Date: 23/Dec/2017
     Last Revision Date: 26/Dec/2017
     Version: 1.0
-    Development Environment: VS Code IDE
+    Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows
 #>

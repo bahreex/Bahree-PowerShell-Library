@@ -33,7 +33,7 @@ E-mail: arjun.bahree@gmail.com
 Creation Date: 10/Jan/2018
 Last Revision Date: 10/Jan/2018
 Version: 1.0
-Development Environment: VS Code IDE
+Development Environment: Azure Automation Runbook Editor and VS Code IDE
 PS Version: 5.1
 Platform: Windows
 #>
