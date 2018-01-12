@@ -57,27 +57,30 @@ param(
     [String[]]$VMName	
 )
 
-$connectionName = "AzureRunAsConnection"
-try {
-    # Get the connection "AzureRunAsConnection "
-    $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
+if (!(Get-AzureRmContext).Account) {
+    $connectionName = "AzureRunAsConnection"
+    try {
+        # Get the connection "AzureRunAsConnection "
+        $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
+    
+        $account = Add-AzureRmAccount `
+            -ServicePrincipal `
+            -TenantId $servicePrincipalConnection.TenantId `
+            -ApplicationId $servicePrincipalConnection.ApplicationId `
+            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
+    }
+    catch {
+        if (!$servicePrincipalConnection) {
+            $ErrorMessage = "Connection $connectionName not found."
+            throw $ErrorMessage
+        }
+        else {
+            Write-Error -Message $_.Exception
+            throw $_.Exception
+        }
+    }
+}
 
-    $account = Add-AzureRmAccount `
-        -ServicePrincipal `
-        -TenantId $servicePrincipalConnection.TenantId `
-        -ApplicationId $servicePrincipalConnection.ApplicationId `
-        -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
-}
-catch {
-    if (!$servicePrincipalConnection) {
-        $ErrorMessage = "Connection $connectionName not found."
-        throw $ErrorMessage
-    }
-    else {
-        Write-Error -Message $_.Exception
-        throw $_.Exception
-    }
-}
 
 # Create Stopwatch
 $StopWatch = New-Object -TypeName System.Diagnostics.Stopwatch
