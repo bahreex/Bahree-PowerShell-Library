@@ -298,6 +298,6 @@ $StopWatch.Stop()
 # Display the Elapsed Time
 Write-Verbose "Total Execution Time for Starting All Target VMs:" + $StopWatch.Elapsed.ToString()
 
-Get-Job | Wait-Job | Remove-Job
+Get-Job | Wait-Job | Receive-Job
 
 Write-Verbose "All Target VM's which were stopped/deallocated, have been Started Successfully!"

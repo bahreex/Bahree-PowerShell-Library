@@ -320,6 +320,6 @@ $StopWatch.Stop()
 # Display the Elapsed Time
 Write-Output "Total Execution Time for Stopping All Target VMs: $($StopWatch.Elapsed.ToString())"
 
-Get-Job | Wait-Job | Remove-Job
+Get-Job | Wait-Job | Receive-Job
 
 Write-Output "All Target VM's which were Running, have been stopped Successfully!"
