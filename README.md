@@ -23,6 +23,7 @@ _**Library of various PowerShell scripts/modules created for automating differen
 - **Expand-AzureRMVMDataDiskRunbook.ps1** - Increase a particular Data Disk size of an Azure RM VM. Supports both Managed and Unmanaged Disks. Disk size reduction not supported by Azure.
 - **Get-AzureRMVMPowerStateRunbook.ps1** - Get the current Power State of an Azure RM VM.
 - **Get-AzureRMVMProvisioningStateRunbook.ps1** - Get the current Provisioning State of an Azure RM VM.
+- **Execute-AzureRMVMRemoteScriptRunbook.ps1** - Enables remote execution of PowerShell Commands/Scripts on one or more target Azure VMs (or On-Premises VMs through Hybrid Worker) in an Azure Subscription.
 
 ## General
 
