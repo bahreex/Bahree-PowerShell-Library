@@ -10,12 +10,12 @@
     Linux, and skip Linux ones). Thereafter, this script triggers specific Inline functions to enable and configure 
     Windows Remote Management service on each VM, setup a connection to the Azure subscription, get the public IP 
     Address of the VM, and remote into it to for execution of whatever commands/script needs to be executed there.
-    You also need to pass the script to be executed on the VMs as an Inline string.
+    You need to pass the script to be executed on the VMs as a ScriptBlock. You need to execute this Runbook through 
+    a 'Azure Run As account (service principal)' Identity from an Azure Automation account.
 
 .PARAMETER KeyVaultName
-    Name of the Azure KeyVault, where username/password for each of the VMs are stored. 
-    Assuming Username and Passwords for each VM are stored in Azure Keyvault in the format:
-    "Name = <VM Name>, Secret = <Password>" 
+    Name of the Azure KeyVault, where password for each of the VMs are stored. Assuming Passwords for each VM are stored
+    in Azure Keyvault in the format: "Secret Name = <VM Name>, Secret Value = <Password>" 
 
 .PARAMETER AzureAutomationAccountName
     Name of the Azure Automation Account, from where this runbook will be run
@@ -37,32 +37,32 @@
 .EXAMPLE
     Execute-AzureVMRemoting -KeyVaultName "CoreKV1" -AzureAutomationAccountName "Automation-AC1" `
     -AzureAutomationResourceGroupName "Automation-RG1" -ResourceGroupName RG1 -VMName VM01 `
-    -RemoteScript "Write-Output 'Hello World!'" 
+    -RemoteScript {Write-Output 'Hello World!'}
 
 .EXAMPLE
     Execute-AzureVMRemoting -KeyVaultName "CoreKV1" -AzureAutomationAccountName "Automation-AC1" `
     -AzureAutomationResourceGroupName "Automation-RG1" -ResourceGroupName RG1 -VMName VM01,VM02,VM11,VM13 `
-    -RemoteScript "Write-Output 'Hello World!'" 
+    -RemoteScript {Write-Output 'Hello World!'} 
 
 .EXAMPLE
     Execute-AzureVMRemoting -KeyVaultName "CoreKV1" -AzureAutomationAccountName "Automation-AC1" `
     -AzureAutomationResourceGroupName "Automation-RG1" -ResourceGroupName RG1 -VMName "VM01" `
-    -RemoteScript "Write-Output 'Hello World!'" 
+    -RemoteScript {Write-Output 'Hello World!'} 
 
 .EXAMPLE
     Execute-AzureVMRemoting -KeyVaultName "CoreKV1" -AzureAutomationAccountName "Automation-AC1" `
     -AzureAutomationResourceGroupName "Automation-RG1" -ResourceGroupName RG1,RG2,RG3 `
-    -RemoteScript "Write-Output 'Hello World!'"
+    -RemoteScript {Write-Output 'Hello World!'}
 
 .EXAMPLE
     Execute-AzureVMRemoting -KeyVaultName "CoreKV1" -AzureAutomationAccountName "Automation-AC1" `
     -AzureAutomationResourceGroupName "Automation-RG1" -VMName VM01,VM02,VM11,VM13 `
-    -RemoteScript "Write-Output 'Hello World!'" 
+    -RemoteScript {Write-Output 'Hello World!'} 
 
 .EXAMPLE
     Execute-AzureVMRemoting -KeyVaultName "CoreKV1" -AzureAutomationAccountName "Automation-AC1" `
     -AzureAutomationResourceGroupName "Automation-RG1" `
-    -RemoteScript "Write-Output 'Hello World!'" 
+    -RemoteScript {Write-Output 'Hello World!'} 
     
 .Notes
     Author: Arjun Bahree
@@ -87,7 +87,7 @@ param(
     [String]$AzureAutomationResourceGroupName,
     
     [Parameter(Mandatory = $true)]
-    [String]$RemoteScript,
+    [scriptblock]$RemoteScript,
     
     [Parameter(Mandatory = $false)]
     [String[]]$ResourceGroupName,
@@ -131,14 +131,12 @@ function Remote-AzureRMVMExecute {
         [String]$ResourceGroupName,
         
         [Parameter(Mandatory = $true)]
-        [String]$RemoteScript,
+        [scriptblock]$RemoteScript,
     
         [Parameter(Mandatory = $true)] 
         [String]$VMName
     )   
-    
-    [ScriptBlock]$sb = [ScriptBlock]::Create($RemoteScript)
-    
+        
     try {   
         $IpAddress = Connect-AzureRMVMRemote -VMName $VMName -ResourceGroupName $ResourceGroupName
                    
@@ -150,7 +148,7 @@ function Remote-AzureRMVMExecute {
     
             $sessionOptions = New-PSSessionOption -SkipCACheck -SkipCNCheck            
     
-            Invoke-Command -ComputerName $IpAddress -Credential $VMCredential -UseSSL -SessionOption $sessionOptions -ScriptBlock $sb
+            Invoke-Command -ComputerName $IpAddress -Credential $VMCredential -UseSSL -SessionOption $sessionOptions -ScriptBlock $RemoteScript
         }
         else {
             Write-Output "Issue in obtaining IP Address for the VM {$VMName} in Resource Group {$ResourceGroupName}: $IpAddress"
