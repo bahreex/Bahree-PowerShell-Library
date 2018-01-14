@@ -1,3 +1,24 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID 1db477bb-b7e1-4a4a-a398-b7f2b2d9a376
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT 
+.TAGS Windows PowerShell Azure AzureAutomation Runbooks AzureVM
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure%20Automation%20Runbooks
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES 
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#>
+
+<# 
+.DESCRIPTION 
+ Gets you the current Provisioning State of an Azure RM VM as a Runbook from within an Azure Automation Account.
+#> 
+
 <#
 .SYNOPSIS 
     Gets you the current Provisioning State of an Azure RM VM as a Runbook from within an Azure Automation Account.
@@ -30,7 +51,6 @@ Author: Arjun Bahree
 E-mail: arjun.bahree@gmail.com
 Creation Date: 10/Jan/2018
 Last Revision Date: 10/Jan/2018
-Version: 1.0
 Development Environment: Azure Automation Runbook Editor and VS Code IDE
 PS Version: 5.1
 Platform: Windows

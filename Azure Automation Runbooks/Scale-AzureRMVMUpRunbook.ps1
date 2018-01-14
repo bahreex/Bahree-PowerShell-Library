@@ -1,3 +1,25 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID 54dbaefd-ef34-461a-90a6-b9481321517f
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT 
+.TAGS Windows PowerShell Azure AzureAutomation Runbooks AzureManagedDisk AzureUnmanagedDisk AzureDataDisk AzureStorage
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure%20Automation%20Runbooks
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES 
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#>
+
+<#
+.DESCRIPTION 
+ Lets you Scale Up any Azure RM VM from its current size to a new size within the same Family.
+#> 
+
+
 <#
 .SYNOPSIS 
     Lets you Scale Up any Azure RM VM from its current size to a new size within the same Family.
@@ -39,7 +61,6 @@
     E-mail: arjun.bahree@gmail.com
     Creation Date: 11/Jan/2018
     Last Revision Date: 12/Jan/2018
-    Version: 2.0
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows

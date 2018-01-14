@@ -1,3 +1,25 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID 921c1349-1827-4246-984b-a5e452f7d71a
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT 
+.TAGS Windows PowerShell Azure AzureAutomation Runbooks AzureVM
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure%20Automation%20Runbooks
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES 
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#>
+
+<# 
+.DESCRIPTION 
+ Asynchronously Stops all or specific Azure RM VMs in an Azure Subscription as a Runbook from within an Azure 
+ Automation Account.
+#> 
+
 <#
 .SYNOPSIS 
     Asynchronously Stops all or specific Azure RM VMs in an Azure Subscription as a Runbook from within an Azure 
@@ -42,7 +64,6 @@
     E-mail: arjun.bahree@gmail.com
     Creation Date: 10/Jan/2018
     Last Revision Date: 11/Jan/2018
-    Version: 2.0
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows

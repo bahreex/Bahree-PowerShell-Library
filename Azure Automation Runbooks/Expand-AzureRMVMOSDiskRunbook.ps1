@@ -1,3 +1,24 @@
+<#PSScriptInfo
+.VERSION 1.0.1
+.GUID db10bd5a-4fb3-4058-8c46-d2044aeb258e
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT 
+.TAGS Windows PowerShell Azure AzureAutomation Runbooks AzureManagedDisk AzureUnmanagedDisk AzureStorage
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure%20Automation%20Runbooks
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES 
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#> 
+
+<#
+.DESCRIPTION 
+Lets you Increase the OS Disk Size for an Azure RM VM as a Runbook from within an Azure Automation Account.
+#>
+
 <#
 .SYNOPSIS 
     Lets you Increase the OS Disk Size for an Azure RM VM as a Runbook from within an Azure Automation Account.
@@ -24,7 +45,6 @@
     E-mail: arjun.bahree@gmail.com
     Creation Date: 23/Dec/2017
     Last Revision Date: 26/Dec/2017
-    Version: 1.0
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows

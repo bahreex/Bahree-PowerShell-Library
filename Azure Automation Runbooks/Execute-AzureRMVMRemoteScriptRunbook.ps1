@@ -1,3 +1,25 @@
+<#PSScriptInfo
+.VERSION 1.0.1
+.GUID 33caea6b-5e18-4ab4-9ff8-9a851000cc95
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT 
+.TAGS Windows PowerShell PSRemoting Azure AzureAutomation Runbooks
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure%20Automation%20Runbooks
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES 
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#> 
+
+<#
+.DESCRIPTION 
+Lets you setup remote connection to all Azure ARM VMs in an Azure Subscription, for remotely executing 
+PowerShell Scripts/Commnads on the target Azure VMs.
+#>
+
 <#
 .SYNOPSIS 
     Lets you setup remote connection to all Azure ARM VMs in an Azure Subscription for remotely executing PoweShell scripts
@@ -73,7 +95,6 @@
     E-mail: arjun.bahree@gmail.com
     Creation Date: 6/Dec/2017
     Last Revision Date: 13/Jan/2018
-    Version: 5.0
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows

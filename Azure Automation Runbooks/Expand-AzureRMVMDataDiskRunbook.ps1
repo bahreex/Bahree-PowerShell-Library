@@ -1,3 +1,24 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID 0cd49773-1cf8-480d-9b53-b3b28090ade5
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT 
+.TAGS Windows PowerShell Azure AzureAutomation Runbooks AzureManagedDisk AzureUnmanagedDisk AzureDataDisk AzureStorage
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure%20Automation%20Runbooks
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES 
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#>
+
+<# 
+.DESCRIPTION 
+ Lets you Increase the Data Disk Size for an Azure RM VM as a Runbook from within an Azure Automation Account.
+#> 
+
 <#
 .SYNOPSIS 
     Lets you Increase the Data Disk Size for an Azure RM VM as a Runbook from within an Azure Automation Account.
@@ -27,7 +48,6 @@
     E-mail: arjun.bahree@gmail.com
     Creation Date: 27/Dec/2017
     Last Revision Date: 27/Dec/2017
-    Version: 1.0
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows
