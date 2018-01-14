@@ -28,11 +28,15 @@
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VMs you want to remote Into. Specifying just the Resource Group without 
-    the "VMName" parameter, will consider all VMs in this specified Resource Group
+    the "VMName" parameter, will consider all VMs in this specified Resource Group. When passing this paramter from the 
+    Start Runbook UI in Azure Automation, you need to pass the value using JSON String format, for e.g. a value of 'rg-01'
+    should be passed as ['rg-01']. Multiple values shoudl be passed as ['rg-01', 'rg-02', 'eg-03']
 
 .PARAMETER VMName    
     Name of the VM you want to remote Into. this parameter cannot be specified without it's Resource group in the 
-    "ResourceGroupName" parameter, or else will throw error
+    "ResourceGroupName" parameter, or else will throw error. When passing this paramter from the 
+    Start Runbook UI in Azure Automation, you need to pass the value using JSON String format, for e.g. a value of 
+    'vm-01' should be passed as ['vm-01']. Multiple values shoudl be passed as ['vm-01', 'vm-02', 'vm-03']
 
 .EXAMPLE
     Execute-AzureVMRemoting -KeyVaultName "CoreKV1" -AzureAutomationAccountName "Automation-AC1" `
@@ -365,7 +369,7 @@ function InitRemoting {
     $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]                   
         
     # Check if PowerState is deallocated/stopped, or in a transient state of deallocating/stopping
-    if ($VMState -And ($VMState -eq ("deallocated" -Or "stopped" -Or "deallocating" -Or "stopping"))) {
+    if ($VMState -And ($VMState -eq "deallocated" -Or $VMState -eq "stopped" -Or $VMState -eq "deallocating" -Or $VMState -eq "stopping")) {
         Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently either deallocated/stopped, or in a transient state. Hence, cannot get IP address, and skipping."
         continue
     }
@@ -451,7 +455,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
                     
                     # Call function to proceed further with remoting into the VM
                     InitRemoting -AAName $AzureAutomationAccountName -AARGName $AzureAutomationResourceGroupName `
-                    -RGName $rgName -vmName $vm.Name -KVName $KeyVaultName
+                    -RGName $vm.ResourceGroupName -vmName $vm.Name -KVName $KeyVaultName
                 }
             }
             else {
