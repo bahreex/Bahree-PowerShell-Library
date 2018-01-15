@@ -49,7 +49,7 @@
 
 .PARAMETER ExcludedResourceGroupName
     Name of the Resource Group(s) containing the VMs you want excluded from being Stopped. It cannot be combined with 
-    "ResourceGroupName" and "VMName" parameters. It cannot be combined with 
+    "ResourceGroupName" and "VMName" parameters. 
 
 .PARAMETER ExcludedVMName    
     Name of the VM(s) you want excluded from being Stopped. It cannot be combined with "VMName" parameter.
@@ -71,9 +71,9 @@
 .EXAMPLE
     .\Stop-AzureRMVMAllRunbook.ps1 -ExcludedResourceGroupName RG5,RG6,RG7 -ExludedVMName VM5,VM6,VM7
 .EXAMPLE
-    .\Stop-AzureRMVMAllRunbook.ps1 -ResourceGroupName RG1 -ExludedVMName VM5,VM6,VM7
+    .\Stop-AzureRMVMAllRunbook.ps1 -ResourceGroupName RG1 -ExcludedVMName VM5,VM6,VM7
 .EXAMPLE
-    .\Stop-AzureRMVMAllRunbook.ps1 -ResourceGroupName RG1,RG2,RG3 -ExludedVMName VM5,VM6,VM7
+    .\Stop-AzureRMVMAllRunbook.ps1 -ResourceGroupName RG1,RG2,RG3 -ExcludedVMName VM5,VM6,VM7
     
 .Notes
     Author: Arjun Bahree
@@ -207,20 +207,20 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
 
     If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
     {
-        Write-Output "You cannot specify Parameters 'ExcludedResourceGroupName' and 'ResourceGroupName' together"
+        Write-Output "You cannot specify Parameters 'ExcludedResourceGroupName' together with 'ResourceGroupName'"
         return
     }
 
     foreach ($rg in $ResourceGroupName) {
 
-        $testRG = Get-AzureRmResourceGroup -Name $rg -ErrorAction SilentlyContinue
-        if (!$testRG) {
-            Write-Output "The Resource Group {$rg} does not exist. Skipping."
-            continue            
-        }
-
         # Get a list of all the VMs in the specific Resource Group
-        $VMs = Get-AzureRmVm -ResourceGroupName $rg
+        $VMs = Get-AzureRmVm -ResourceGroupName $rg -ErrorAction SilentlyContinue
+
+        if(!$?)
+        {
+            Write-Output "The Resource Group {$rg} does not exist. Skipping."
+            continue             
+        }
         
         if ($VMs) {
             # Iterate through all the VMs within the specific Resource Group for this Iteration
@@ -244,16 +244,16 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
                 $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]
                 
                 if ($VMState) {
-                    if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
+                    if ($VMState -in "deallocated","stopped") {
                         Write-Output "The VM {$VMBaseName} in Resource Group {$rg} is currently already Deallocated/Stopped. Skipping."
                         continue
                     }
-                    elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
+                    elseif ($VMState -in "running","starting") {
                         Write-Output "The VM {$VMBaseName} in Resource Group {$rg} is currently either already Started or Starting. Stopping..."
                         $retval = Stop-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -AsJob -Force
                         $jobQ.Add($retval) > $null
                     }
-                    elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
+                    elseif ($VMState -in "stopping","deallocating") {
                         Write-Output "The VM {$VMBaseName} in Resource Group {$rg} is in a transient state of Stopping or Deallocating. Skipping."
                         continue
                     }
@@ -282,7 +282,13 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
 
     If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
     {
-        Write-Output "You cannot specify Parameters 'ExcludedResourceGroupName' and 'ResourceGroupName' together"
+        Write-Output "You cannot specify Parameters 'ExcludedResourceGroupName' together with 'ResourceGroupName'"
+        return
+    }
+
+    If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
+    {
+        Write-Output "You cannot specify Parameters 'ExcludedVMName' together with 'ResourceGroupName' and 'VMName'"
         return
     }
 
@@ -297,14 +303,6 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
     # Iterate through all VM's specified
     foreach ($vms in $VMName)
     {
-        If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
-        {
-            if ($ExcludedVMName.Contains($vms))
-            {
-                Write-Output "Skipping VM {$vms} since it is specified as Excluded..."
-                continue
-            }
-        }
         # Get the specified VM in the specific Resource Group
         $vm = Get-AzureRmVm -ResourceGroupName $ResourceGroupName -Name $vms -ErrorAction SilentlyContinue
 
@@ -320,16 +318,16 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
             $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]
 
             if ($VMState) {
-                if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
+                if ($VMState -in "deallocated","stopped") {
                     Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently already Deallocated/Stopped. Skipping."
                     continue
                 }
-                elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
+                elseif ($VMState -in "running","starting") {
                     Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently either already Started or Starting. Stopping..."
                     $retval = Stop-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob -Force
                     $jobQ.Add($retval) > $null
                 }
-                elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
+                elseif ($VMState -in "stopping","deallocating") {
                     Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Skipping."
                     continue
                 }
@@ -348,6 +346,18 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
 # Check if Resource Group param is not passed, but VM Name param is passed
 Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParameters.ContainsKey('VMName')) {
     
+    If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
+    {
+        Write-Output "You cannot specify Parameters 'ExcludedResourceGroupName' and 'VMName' together"
+        return
+    }
+
+    If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
+    {
+        Write-Output "You cannot specify Parameters 'ExcludedVMName' and 'VMName' together"
+        return
+    }
+
     foreach ($vms in $VMName) {
        
         # Find the specific VM resource
@@ -356,21 +366,9 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
         # If the VM resource is found in the Subscription
         if ($vmFind)
         {
-            If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
-            {
-                Write-Output "You cannot specify Parameters 'ExcludedVMName' and 'VMName' together"
-                return
-            }
-
             # Extract the Resource Group Name of the VM
             $RGBaseName = $vmFind.ResourceGroupName
-
-            If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
-            {
-                Write-Output "You cannot specify Parameters 'ExcludedResourceGroupName' and 'VMName' together"
-                return
-            }
-            
+           
             # Get reference object of the VM
             $vm = Get-AzureRmVm -ResourceGroupName $RGBaseName -Name $vms
             
@@ -385,16 +383,16 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
                 $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]
                     
                 if ($VMState) {
-                    if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
+                    if ($VMState -in "deallocated","stopped") {
                         Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently already Deallocated/Stopped. Skipping."
                         continue
                     }
-                    elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
+                    elseif ($VMState -in "running","starting") {
                         Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently either already Started or Starting. Stopping..."
                         $retval = Stop-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob -Force
                         $jobQ.Add($retval) > $null
                     }
-                    elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
+                    elseif ($VMState -in "stopping","deallocating") {
                         Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Skipping."
                         continue
                     }
