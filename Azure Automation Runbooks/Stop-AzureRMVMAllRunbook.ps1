@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.0
+.VERSION 1.1.0
 .GUID 921c1349-1827-4246-984b-a5e452f7d71a
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
@@ -28,9 +28,10 @@
 .DESCRIPTION
     This Runbook asynchronously Stops either all Azure RM VMs in an Azure Subscription, or all Azure RM VMs in one or 
     more specified Resource Groups, or one or more VMs in a specific Resource Group, or any number of Random VMs in a 
-    Subscription. The choice around which VMs to stop depends on the combination and values of the parameters provided. 
-    You need to execute this Runbook through a 'Azure Run As account (service principal)' Identity from an Azure 
-    Automation account.
+    Subscription. You can specify one or more Resource Groups to exclude, wherein all VMs in those Resource Groups will 
+    not be stopped. You can specify one or more VMs to exclude, wherein all those VMs will not be stopped. The 
+    choice around which VMs to stop depends on the combination and values of the parameters provided. You need to 
+    execute this Runbook through a 'Azure Run As account (service principal)' Identity from an Azure Automation account.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VMs you want to Stop. Specifying just the Resource Group without 
@@ -41,10 +42,17 @@
     specify more than one Resource Group Names when combined with the "VMName" parameter.
 
 .PARAMETER VMName    
-    Name of the VM you want to Stop. This parameter when specified alone, without the $ResourceGroupName 
+    Name of the VM you want to Stop. This parameter when specified alone, without the "ResourceGroupName" 
     parameter, can Include one or more VM Names to be stopped across any resource groups in the Azure Subscription. When
-    specified with the "-ResourceGroupName" parameter, you need to Include one or more VMs in the specified Resource
+    specified with the "ResourceGroupName" parameter, you need to Include one or more VMs in the specified Resource
     Group only.
+
+.PARAMETER ExcludedResourceGroupName
+    Name of the Resource Group(s) containing the VMs you want excluded from being Stopped. It cannot be combined with 
+    "ResourceGroupName" and "VMName" parameters. It cannot be combined with 
+
+.PARAMETER ExcludedVMName    
+    Name of the VM(s) you want excluded from being Stopped. It cannot be combined with "VMName" parameter.
 
 .EXAMPLE
     .\Stop-AzureRMVMAllRunbook.ps1
@@ -58,12 +66,20 @@
     .\Stop-AzureRMVMAllRunbook.ps1 -ResourceGroupName RG1 -VMName VM01,VM02,VM05
 .EXAMPLE
     .\Stop-AzureRMVMAllRunbook.ps1 -VMName VM01,VM011,VM23,VM35
+.EXAMPLE
+    .\Stop-AzureRMVMAllRunbook.ps1 -ExcludedResourceGroupName RG5,RG6,RG7
+.EXAMPLE
+    .\Stop-AzureRMVMAllRunbook.ps1 -ExcludedResourceGroupName RG5,RG6,RG7 -ExludedVMName VM5,VM6,VM7
+.EXAMPLE
+    .\Stop-AzureRMVMAllRunbook.ps1 -ResourceGroupName RG1 -ExludedVMName VM5,VM6,VM7
+.EXAMPLE
+    .\Stop-AzureRMVMAllRunbook.ps1 -ResourceGroupName RG1,RG2,RG3 -ExludedVMName VM5,VM6,VM7
     
 .Notes
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
     Creation Date: 10/Jan/2018
-    Last Revision Date: 11/Jan/2018
+    Last Revision Date: 15/Jan/2018
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows
@@ -71,11 +87,17 @@
 
 param(
  
-    [Parameter()]
+    [Parameter(Mandatory=$false)]
     [String[]]$ResourceGroupName,
     
-    [Parameter()]
-    [String[]]$VMName	
+    [Parameter(Mandatory=$false)]
+    [String[]]$VMName,
+
+    [Parameter(Mandatory=$false)]
+    [String[]]$ExcludedResourceGroupName,
+    
+    [Parameter(Mandatory=$false)]
+    [String[]]$ExcludedVMName
 )
 
 if (!(Get-AzureRmContext).Account) {
@@ -121,6 +143,24 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
         
         # Iterate through all the VMs discovered within the Subscription
         foreach ($vmx in $VMs) {
+
+            If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
+            {
+                if ($ExcludedResourceGroupName.Contains($vmx.ResourceGroupName))
+                {
+                    Write-Output "Skipping VM {$($vmx.Name)} since the Resource Group {$($vmx.ResourceGroupName)} containing it is specified as Excluded..."
+                    continue
+                }
+            }
+
+            If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
+            {
+                if ($ExcludedVMName.Contains($vmx.Name))
+                {
+                    Write-Output "Skipping VM {$($vmx.Name)} since it is specified as Excluded..."
+                    continue
+                }
+            }
             
             # Get reference to the specific VM for this Iteration
             $vm = Get-AzureRmVM -ResourceGroupName $vmx.ResourceGroupName -Name $vmx.Name
@@ -165,6 +205,12 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
 # Check if only Resource Group param is passed, but not the VM Name param
 Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameters.ContainsKey('VMName')) {
 
+    If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
+    {
+        Write-Output "You cannot specify Parameters 'ExcludedResourceGroupName' and 'ResourceGroupName' together"
+        return
+    }
+
     foreach ($rg in $ResourceGroupName) {
 
         $testRG = Get-AzureRmResourceGroup -Name $rg -ErrorAction SilentlyContinue
@@ -179,16 +225,23 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
         if ($VMs) {
             # Iterate through all the VMs within the specific Resource Group for this Iteration
             foreach ($vm in $VMs) {
+    
+                If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
+                {
+                    if ($ExcludedVMName.Contains($vm.Name))
+                    {
+                        Write-Output "Skipping VM {$($vm.Name)} from Resource Group {$rg} since it is specified as Excluded..."
+                        continue
+                    }
+                }
+
                 $VMBaseName = $vm.Name
 
                 # Get current status of the VM
                 $vmstatus = Get-AzureRmVM -ResourceGroupName $rg -Name $VMBaseName -Status
 
                 # Extract current Power State of the VM
-                $powerState = $vmstatus.Statuses[1].Code.Split('/')[1]
-
-                # Return the Power State
-                $VMState = $powerState
+                $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]
                 
                 if ($VMState) {
                     if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
@@ -223,7 +276,13 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
     # You cannot specify Resource Groups more than 1 when both ResourceGroupName and VMName parameters are specified
     if ($ResourceGroupName.Count -gt 1)
     {
-        Write-Output "You can only specify a single Resource Group Name value when using both '-ResourceGroupName' and '-VMName' parameters together."
+        Write-Output "You can only specify a single Resource Group Name when using both 'ResourceGroupName' and 'VMName' Parameters together."
+        return
+    }
+
+    If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
+    {
+        Write-Output "You cannot specify Parameters 'ExcludedResourceGroupName' and 'ResourceGroupName' together"
         return
     }
 
@@ -231,13 +290,21 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
     $testRG = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
 
     if (!$testRG) {
-        Write-Output "The Resource Group {$ResourceGroupName} does not exist. Skipping."
-        continue            
+        Write-Output "The Resource Group {$ResourceGroupName} does not exist. Aborting."
+        return           
     }
 
     # Iterate through all VM's specified
     foreach ($vms in $VMName)
     {
+        If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
+        {
+            if ($ExcludedVMName.Contains($vms))
+            {
+                Write-Output "Skipping VM {$vms} since it is specified as Excluded..."
+                continue
+            }
+        }
         # Get the specified VM in the specific Resource Group
         $vm = Get-AzureRmVm -ResourceGroupName $ResourceGroupName -Name $vms -ErrorAction SilentlyContinue
 
@@ -289,8 +356,20 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
         # If the VM resource is found in the Subscription
         if ($vmFind)
         {
+            If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
+            {
+                Write-Output "You cannot specify Parameters 'ExcludedVMName' and 'VMName' together"
+                return
+            }
+
             # Extract the Resource Group Name of the VM
             $RGBaseName = $vmFind.ResourceGroupName
+
+            If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
+            {
+                Write-Output "You cannot specify Parameters 'ExcludedResourceGroupName' and 'VMName' together"
+                return
+            }
             
             # Get reference object of the VM
             $vm = Get-AzureRmVm -ResourceGroupName $RGBaseName -Name $vms
@@ -346,4 +425,4 @@ Write-Output "Total Execution Time for Stopping All Target VMs: $($StopWatch.Ela
 
 Get-Job | Wait-Job | Receive-Job
 
-Write-Output "All Target VM's which were Running, have been stopped Successfully!"
+Write-Output "All Target VM's which were Running and not Excluded, have been stopped Successfully!"
