@@ -1,11 +1,31 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID 9b5bc445-430f-4e06-8ad3-becdbe28617e
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT (c) 2018 Arjun Bahree. All rights reserved.
+.TAGS Windows PowerShell Azure AzureVM AzureManagedDisk AzureUnmanagedDisk AzureDataDisk AzureStorage
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES AzureRM
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#>
+
+<# 
+.DESCRIPTION 
+ Lets you Increase the Data Disk Size for an Azure RM VM.
+#> 
+
 <#
 .SYNOPSIS 
     Lets you Increase the Data Disk Size for an Azure RM VM.
 
 .DESCRIPTION
-    This script lets you Increase the Data Disk size for a VM. Data Disk Size reduction is not supported by Azure. It 
-    supports Data Disk resizing for both Managed and Unmanaged disks. You need to be already logged into your Azure 
-    account through PowerShell before calling this script.
+    This Script lets you Increase the Data Disk size for a VM. Data Disk Size reduction is not supported by Azure. It 
+    supports Data Disk resizing for both Managed and Unmanaged disks. 
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VM, whose Data Disk you want to resize
@@ -26,7 +46,7 @@
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
     Creation Date: 27/Dec/2017
-    Last Revision Date: 27/Dec/2017
+    Last Revision Date: 15/Jan/2018
     Development Environment: VS Code IDE
     PS Version: 5.1
     Platform: Windows
@@ -48,7 +68,7 @@ param(
     [int]$NewDataDiskSize
 )
 
-if (!(Get-AzureRmContext).Account){
+if (!(Get-AzureRmContext).Account) {
     Write-Error "You need to be logged into your Azure Subscription using PowerShell cmdlet 'Login-AzureRmAccount'"
     return
 }
@@ -92,10 +112,10 @@ if ($vm)
 
                     Write-Verbose "Changing Unmanaged Data Disk Size..."
                     
-                    # Change the OS Disk Size 
+                    # Change the Data Disk Size 
                     $ddisk.DiskSizeGB = $NewDataDiskSize
 
-                    # Update the VM to apply OS Disk change
+                    # Update the VM to apply Data Disk change
                     $resizeOps = Update-AzureRmVM -ResourceGroupName $ResourceGroupName -VM $vm
                 }
                 else 
@@ -121,10 +141,10 @@ if ($vm)
                     
                     Write-Verbose "Changing Managed Data Disk Size..."
 
-                    # Get OS Disk for the VM in context
+                    # Get Data Disk for the VM in context
                     $vmDisk = Get-AzureRmDisk -ResourceGroupName $ResourceGroupName -DiskName $ddisk.Name
                     
-                    # Change the OS Disk Size
+                    # Change the Data Disk Size
                     $vmDisk.DiskSizeGB = $NewDataDiskSize
 
                     # Update the Disk
@@ -134,7 +154,7 @@ if ($vm)
                 If ($stopVM)
                 {
                     Write-Verbose "Restart the VM as it was stopped from a Running State..."
-                    $startVMJob = Start-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -AsJob
+                    Start-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -AsJob > $null
                 }
 
                 Write-Verbose "Data Disk size change successful. Please restart the VM."

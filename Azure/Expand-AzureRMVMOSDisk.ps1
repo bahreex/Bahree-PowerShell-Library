@@ -1,11 +1,31 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID 95257f6a-3f2c-471e-9f24-3e71b850eb17
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT (c) 2018 Arjun Bahree. All rights reserved.
+.TAGS Windows PowerShell Azure AzureVM AzureManagedDisk AzureUnmanagedDisk AzureStorage
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES AzureRM
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#> 
+
+<#
+.DESCRIPTION 
+Lets you Increase the OS Disk Size for an Azure RM VM.
+#>
+
 <#
 .SYNOPSIS 
     Lets you Increase the OS Disk Size for an Azure RM VM.
 
 .DESCRIPTION
-    This script lets you Increase the OS Disk size for a VM. OS Disk Size reduction is not supported by Azure. It 
-    supports OS Disk resizing for both Managed and Unmanaged disks. You need to be already logged into your Azure 
-    account through PowerShell before calling this script.
+    This Script lets you Increase the OS Disk size for a VM. OS Disk Size reduction is not supported by Azure. It 
+    supports OS Disk resizing for both Managed and Unmanaged disks. 
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VM, whose OS Disk you want to resize
@@ -23,7 +43,7 @@
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
     Creation Date: 23/Dec/2017
-    Last Revision Date: 26/Dec/2017
+    Last Revision Date: 15/Jan/2018
     Development Environment: VS Code IDE
     PS Version: 5.1
     Platform: Windows
@@ -42,7 +62,7 @@ param(
     [int]$NewOSDiskSize
 )
 
-if (!(Get-AzureRmContext).Account){
+if (!(Get-AzureRmContext).Account) {
     Write-Error "You need to be logged into your Azure Subscription using PowerShell cmdlet 'Login-AzureRmAccount'"
     return
 }
@@ -114,7 +134,7 @@ if ($vm)
     If ($stopVM)
     {
         Write-Verbose "Restart the VM as it was stopped from a Running State..."
-        $startVMJob = Start-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -AsJob
+        Start-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -AsJob > $null
     }
 
     Write-Verbose "OS Disk size change successful."
