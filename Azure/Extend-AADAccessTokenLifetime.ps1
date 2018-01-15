@@ -32,7 +32,8 @@
     Name of the Azure AD Policy that will be set within the Subscription
 
 .PARAMETER PolicyMaxLife    
-    The new time duration you want to extend the Azure AD Access Token lifetime to. This should be a DateTime object or a string representing the duration in Hours:Minutes format
+    The new time duration you want to extend the Azure AD Access Token lifetime to. This should be a DateTime object or 
+    a string representing the duration in Hours:Minutes format
 
 .EXAMPLE
     .\Extend-AADAccessTokenLifetime.ps1 -PolicyName "Test-Policy" -PolicyMaxLife "23:59"
