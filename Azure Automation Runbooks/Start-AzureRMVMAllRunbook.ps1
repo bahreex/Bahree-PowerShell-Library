@@ -21,9 +21,6 @@ Asynchronously Starts all or specific Azure RM VMs in an Azure Subscription as a
 Automation Account
 #> 
 
-Param()
-
-
 <#
 .SYNOPSIS 
     Asynchronously Starts all or specific Azure RM VMs in an Azure Subscription as a Runbook from within an Azure 

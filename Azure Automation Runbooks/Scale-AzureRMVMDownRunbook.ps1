@@ -25,7 +25,7 @@ Lets you Scale down any Azure RM VM from its current size to a new size within t
     Lets you Scale down any Azure RM VM from its current size to a new size within the same Family.
 
 .DESCRIPTION
-    This script lets you Scale down any Azure RM VM from its current Size to a new size that you specify. By default the
+    This Runbook lets you Scale down any Azure RM VM from its current Size to a new size that you specify. By default the
     new size to scale is Immediately before the current size in the Size Table published by Microsoft, which means the 
     SizeStep parameter with value -1. However, if you specify another value for SizeStep parameter, which should be 
     lesser than your current VM size number in the Size Table, your VM will be scaled down to that Size in the Size 
@@ -33,7 +33,7 @@ Lets you Scale down any Azure RM VM from its current size to a new size within t
     able to scale down the VM any further as cross-family resizing is not allowed by Microsoft Azure. Since Microsoft 
     does not make the VM Size Table available in a format that cna be consumed programmatically for reference, I have 
     manually created the same and publicly shared through a Gist in my Github repository. The URL for the Gist is 
-    embedded in the Script code, which I will regularly update as and when Microsoft updates the VM Size table. You can 
+    embedded in the Runbook code, which I will regularly update as and when Microsoft updates the VM Size table. You can 
     find the most current VM Size table at the Gist URL (https://gist.github.com/bahreex/96a611b5ca05de2df2c3d7f45b11b75d) 
     and within this repository as a CSV file named "Azure-VM-Sizes-29122017.csv". You need to execute this Runbook 
     through a 'Azure Run As account (service principal)' Identity from an Azure Automation account.

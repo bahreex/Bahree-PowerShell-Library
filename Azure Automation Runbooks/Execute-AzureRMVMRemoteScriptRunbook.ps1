@@ -26,7 +26,7 @@ PowerShell Scripts/Commnads on the target Azure VMs.
     on the target VMs
 
 .DESCRIPTION
-    This runbook sets up and remotely executes Inline Powershell scripts on one/more/all Azure ARM virtual machines in 
+    This Runbook sets up and remotely executes Inline Powershell scripts on one/more/all Azure ARM virtual machines in 
     your Azure Subscription. It enables you to traverse through all resource groups and corresponding VMs in your Azure 
     Subscription, check the current state of VMs (and skip the deallocated/atopped ones), check OS type (Windows or 
     Linux, and skip Linux ones). Thereafter, this script triggers specific Inline functions to enable and configure 
