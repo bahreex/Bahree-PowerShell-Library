@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.0
+.VERSION 1.1.0
 .GUID 0cd49773-1cf8-480d-9b53-b3b28090ade5
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
@@ -47,7 +47,7 @@
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
     Creation Date: 27/Dec/2017
-    Last Revision Date: 27/Dec/2017
+    Last Revision Date: 15/Jan/2018
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows
@@ -75,11 +75,11 @@ if (!(Get-AzureRmContext).Account) {
         # Get the connection "AzureRunAsConnection "
         $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
     
-        $account = Add-AzureRmAccount `
+        Add-AzureRmAccount `
             -ServicePrincipal `
             -TenantId $servicePrincipalConnection.TenantId `
             -ApplicationId $servicePrincipalConnection.ApplicationId `
-            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
+            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint > $null
     }
     catch {
         if (!$servicePrincipalConnection) {
@@ -132,10 +132,10 @@ if ($vm)
 
                     Write-Output "Changing Unmanaged Data Disk Size..."
                     
-                    # Change the OS Disk Size 
+                    # Change the Data Disk Size 
                     $ddisk.DiskSizeGB = $NewDataDiskSize
 
-                    # Update the VM to apply OS Disk change
+                    # Update the VM to apply Data Disk change
                     $resizeOps = Update-AzureRmVM -ResourceGroupName $ResourceGroupName -VM $vm
                 }
                 else 
@@ -161,10 +161,10 @@ if ($vm)
                     
                     Write-Output "Changing Managed Data Disk Size..."
 
-                    # Get OS Disk for the VM in context
+                    # Get Data Disk for the VM in context
                     $vmDisk = Get-AzureRmDisk -ResourceGroupName $ResourceGroupName -DiskName $ddisk.Name
                     
-                    # Change the OS Disk Size
+                    # Change the Data Disk Size
                     $vmDisk.DiskSizeGB = $NewDataDiskSize
 
                     # Update the Disk

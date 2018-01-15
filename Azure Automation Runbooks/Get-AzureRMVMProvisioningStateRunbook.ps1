@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.0
+.VERSION 1.1.0
 .GUID 1db477bb-b7e1-4a4a-a398-b7f2b2d9a376
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
@@ -50,7 +50,7 @@ Possible VM Provisioning State Values (Model View):
 Author: Arjun Bahree
 E-mail: arjun.bahree@gmail.com
 Creation Date: 10/Jan/2018
-Last Revision Date: 10/Jan/2018
+Last Revision Date: 15/Jan/2018
 Development Environment: Azure Automation Runbook Editor and VS Code IDE
 PS Version: 5.1
 Platform: Windows
@@ -71,11 +71,11 @@ if (!(Get-AzureRmContext).Account) {
         # Get the connection "AzureRunAsConnection "
         $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
     
-        $account = Add-AzureRmAccount `
+        Add-AzureRmAccount `
             -ServicePrincipal `
             -TenantId $servicePrincipalConnection.TenantId `
             -ApplicationId $servicePrincipalConnection.ApplicationId `
-            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
+            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint > $null
     }
     catch {
         if (!$servicePrincipalConnection) {

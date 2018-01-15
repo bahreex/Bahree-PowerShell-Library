@@ -1,6 +1,6 @@
 
 <#PSScriptInfo
-.VERSION 1.0.0
+.VERSION 1.1.0
 .GUID 11e99475-b9cc-4d1f-bee0-ac57c431b6bb
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
@@ -53,7 +53,7 @@ Deallocated  :Indicates that the virtual machine is removed from the Hypervisor 
 Author: Arjun Bahree
 E-mail: arjun.bahree@gmail.com
 Creation Date: 10/Jan/2018
-Last Revision Date: 10/Jan/2018
+Last Revision Date: 15/Jan/2018
 Development Environment: Azure Automation Runbook Editor and VS Code IDE
 PS Version: 5.1
 Platform: Windows
@@ -74,11 +74,11 @@ if (!(Get-AzureRmContext).Account) {
         # Get the connection "AzureRunAsConnection "
         $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
     
-        $account = Add-AzureRmAccount `
+        Add-AzureRmAccount `
             -ServicePrincipal `
             -TenantId $servicePrincipalConnection.TenantId `
             -ApplicationId $servicePrincipalConnection.ApplicationId `
-            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
+            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint > $null
     }
     catch {
         if (!$servicePrincipalConnection) {

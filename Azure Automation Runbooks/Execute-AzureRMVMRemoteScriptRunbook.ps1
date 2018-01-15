@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.1
+.VERSION 1.1.0
 .GUID 33caea6b-5e18-4ab4-9ff8-9a851000cc95
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
@@ -94,7 +94,7 @@ PowerShell Scripts/Commnads on the target Azure VMs.
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
     Creation Date: 6/Dec/2017
-    Last Revision Date: 13/Jan/2018
+    Last Revision Date: 15/Jan/2018
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows

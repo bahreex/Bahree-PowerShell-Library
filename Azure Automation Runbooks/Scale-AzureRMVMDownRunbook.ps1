@@ -1,6 +1,6 @@
 
 <#PSScriptInfo
-.VERSION 1.0.0
+.VERSION 1.1.0
 .GUID 4e1d1e4a-baeb-4581-8f8e-6406fe424340
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
@@ -59,7 +59,7 @@ Lets you Scale down any Azure RM VM from its current size to a new size within t
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
     Creation Date: 11/Jan/2018
-    Last Revision Date: 12/Jan/2018
+    Last Revision Date: 15/Jan/2018
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows

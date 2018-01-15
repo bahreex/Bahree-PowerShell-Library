@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.0
+.VERSION 1.1.0
 .GUID 54dbaefd-ef34-461a-90a6-b9481321517f
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
@@ -60,7 +60,7 @@
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
     Creation Date: 11/Jan/2018
-    Last Revision Date: 12/Jan/2018
+    Last Revision Date: 15/Jan/2018
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows

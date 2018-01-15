@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.1
+.VERSION 1.1.0
 .GUID db10bd5a-4fb3-4058-8c46-d2044aeb258e
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
@@ -44,7 +44,7 @@ Lets you Increase the OS Disk Size for an Azure RM VM as a Runbook from within a
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
     Creation Date: 23/Dec/2017
-    Last Revision Date: 26/Dec/2017
+    Last Revision Date: 15/Jan/2018
     Development Environment: Azure Automation Runbook Editor and VS Code IDE
     PS Version: 5.1
     Platform: Windows
@@ -69,11 +69,11 @@ if (!(Get-AzureRmContext).Account) {
         # Get the connection "AzureRunAsConnection "
         $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
     
-        $account = Add-AzureRmAccount `
+        Add-AzureRmAccount `
             -ServicePrincipal `
             -TenantId $servicePrincipalConnection.TenantId `
             -ApplicationId $servicePrincipalConnection.ApplicationId `
-            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
+            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint > $null
     }
     catch {
         if (!$servicePrincipalConnection) {
