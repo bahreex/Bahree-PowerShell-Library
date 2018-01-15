@@ -390,12 +390,12 @@ function InitRemoting {
     $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]                   
         
     # Check if PowerState is deallocated/stopped, or in a transient state of deallocating/stopping
-    if ($VMState -And ($VMState -eq "deallocated" -Or $VMState -eq "stopped" -Or $VMState -eq "deallocating" -Or $VMState -eq "stopping")) {
+    if ($VMState -And ($VMState -in "deallocated","stopped","deallocating","stopping")) {
         Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently either deallocated/stopped, or in a transient state. Hence, cannot get IP address, and skipping."
         continue
     }
     else {
-        Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently already Running. Procedding forward."
+        Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently already Running. Proceeding forward."
     }
         
     # For the VM in context, extract the corresponding username/password from Azure KeyVault
