@@ -29,14 +29,16 @@ Automation Account
 .DESCRIPTION
     This Runbook asynchronously Starts either all Azure RM VMs in an Azure Subscription, or all Azure RM VMs in one or 
     more specified Resource Groups, or one or more VMs in a specific Resource Group, or any number of Random VMs in a 
-    Subscription. The choice around which VMs to start depends on the combination and values of the parameters provided. 
-    You need to execute this Runbook through a 'Azure Run As account (service principal)' Identity from an Azure 
+    Subscription. You can specify one or more Resource Groups to exclude, wherein all VMs in those Resource Groups will 
+    not be started. You can specify one or more VMs to exclude, wherein all those VMs will not be started. The choice 
+    around which VMs to start depends on the combination and values of the parameters provided. You need to execute this
+    Runbook through a 'Azure Run As account (service principal)' Identity from an Azure 
     Automation account.
 
 .PARAMETER ResourceGroupName
     Name of the Resource Group containing the VMs you want to Start. Specifying just the Resource Group without 
     the "VMName" parameter will consider all VMs in that specified Resource Group. You can specify an array of 
-    Resource Group names without "VMName" parameter, and all VMs withihn the specified Resource Groups in the array will
+    Resource Group names without "VMname" parameter, and all VMs withihn the specified Resource Groups in the array will
     be started. You can specify just a single Resource Group Name in this parameter, along with one or more VM names in 
     the "VMName" parameter, wherein all the VMs specified will be started in that specific Resource Group. You cannot
     specify more than one Resource Group Names when combined with the "VMName" parameter.
