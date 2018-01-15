@@ -146,7 +146,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
 
             If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
             {
-                if ($ExcludedResourceGroupName.Contains($vmx.ResourceGroupName))
+                if ($ExcludedResourceGroupName -Contains $vmx.ResourceGroupName)
                 {
                     Write-Output "Skipping VM {$($vmx.Name)} since the Resource Group {$($vmx.ResourceGroupName)} containing it is specified as Excluded..."
                     continue
@@ -155,7 +155,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
 
             If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
             {
-                if ($ExcludedVMName.Contains($vmx.Name))
+                if ($ExcludedVMName -Contains $vmx.Name)
                 {
                     Write-Output "Skipping VM {$($vmx.Name)} since it is specified as Excluded..."
                     continue
@@ -176,16 +176,16 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
             
             # Check PowerState Level of the VM, and stop it only if it is in a "Running" or "Starting" state
             if ($VMState) {
-                if ($VMState -eq "deallocated" -Or $VMState -eq "stopped") {
+                if ($VMState -in "deallocated","stopped") {
                     Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently already Deallocated/Stopped. Skipping."
                     continue
                 }
-                elseif ($VMState -eq "running" -Or $VMState -eq "starting") {
+                elseif ($VMState -in "running","starting") {
                     Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently either already Started or Starting. Stopping..."
                     $retval = Stop-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -AsJob -Force
                     $jobQ.Add($retval) > $null
                 }
-                elseif ($VMState -eq "stopping" -Or $VMState -eq "deallocating") {
+                elseif ($VMState -in "stopping","deallocating") {
                     Write-Output "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Skipping."
                     continue
                 }
@@ -228,7 +228,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
     
                 If ($PSBoundParameters.ContainsKey('ExcludedVMName'))
                 {
-                    if ($ExcludedVMName.Contains($vm.Name))
+                    if ($ExcludedVMName -Contains $vm.Name)
                     {
                         Write-Output "Skipping VM {$($vm.Name)} from Resource Group {$rg} since it is specified as Excluded..."
                         continue
@@ -415,12 +415,12 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
     }
 }
 
+Get-Job | Wait-Job | Receive-Job > $null
+
 # Stop the Timer
 $StopWatch.Stop()
 
 # Display the Elapsed Time
 Write-Output "Total Execution Time for Stopping All Target VMs: $($StopWatch.Elapsed.ToString())"
-
-Get-Job | Wait-Job | Receive-Job
 
 Write-Output "All Target VM's which were Running and not Excluded, have been stopped Successfully!"
