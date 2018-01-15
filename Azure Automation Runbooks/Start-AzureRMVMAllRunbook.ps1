@@ -1,6 +1,6 @@
 
 <#PSScriptInfo
-.VERSION 1.0.0
+.VERSION 1.1.0
 .GUID f886e06d-323d-4eb1-a3ca-bd9e66524ec9
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
