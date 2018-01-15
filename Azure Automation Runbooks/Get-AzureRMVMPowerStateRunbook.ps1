@@ -4,12 +4,12 @@
 .GUID 11e99475-b9cc-4d1f-bee0-ac57c431b6bb
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
-.COPYRIGHT 
+.COPYRIGHT (c) 2018 Arjun Bahree. All rights reserved.
 .TAGS Windows PowerShell Azure AzureAutomation Runbooks AzureVM
 .LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
 .PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure%20Automation%20Runbooks
 .ICONURI 
-.EXTERNALMODULEDEPENDENCIES 
+.EXTERNALMODULEDEPENDENCIES AzureRM
 .REQUIREDSCRIPTS 
 .EXTERNALSCRIPTDEPENDENCIES 
 .RELEASENOTES

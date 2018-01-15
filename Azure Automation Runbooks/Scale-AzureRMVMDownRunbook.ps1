@@ -4,12 +4,12 @@
 .GUID 4e1d1e4a-baeb-4581-8f8e-6406fe424340
 .AUTHOR Arjun Bahree
 .COMPANYNAME 
-.COPYRIGHT 
+.COPYRIGHT (c) 2018 Arjun Bahree. All rights reserved.
 .TAGS Windows PowerShell Azure AzureAutomation Runbooks AzureManagedDisk AzureUnmanagedDisk AzureDataDisk AzureStorage
 .LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
 .PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure%20Automation%20Runbooks
 .ICONURI 
-.EXTERNALMODULEDEPENDENCIES 
+.EXTERNALMODULEDEPENDENCIES AzureRM
 .REQUIREDSCRIPTS 
 .EXTERNALSCRIPTDEPENDENCIES 
 .RELEASENOTES

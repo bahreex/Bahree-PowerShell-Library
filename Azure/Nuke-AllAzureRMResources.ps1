@@ -1,3 +1,24 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID 2a1954a5-8df4-4ba8-b228-0bb1867e2ffc
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT (c) 2018 Arjun Bahree. All rights reserved.
+.TAGS Windows PowerShell Azure AzureVM
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES AzureRM
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#>
+
+<# 
+.DESCRIPTION 
+ Lets you asynchronously destory/nuke all Azure RM resources in an Azure Subscription
+#> 
+
 <#
 .SYNOPSIS 
     Lets you asynchronously destory/nuke all Azure RM resources in an Azure Subscription
@@ -14,7 +35,6 @@
     E-mail: arjun.bahree@gmail.com
     Creation Date: 09/Jan/2018
     Last Revision Date: 09/Jan/2018
-    Version: 1.0
     Development Environment: VS Code IDE
     PS Version: 5.1
     Platform: Windows

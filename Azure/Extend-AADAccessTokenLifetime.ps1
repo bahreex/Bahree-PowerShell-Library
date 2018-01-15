@@ -1,4 +1,25 @@
-﻿<#
+﻿<#PSScriptInfo
+.VERSION 1.0.0
+.GUID f94831fe-2c33-4a3b-95e9-6c4ef308e9cd
+.AUTHOR Arjun Bahree
+.COMPANYNAME 
+.COPYRIGHT (c) 2018 Arjun Bahree. All rights reserved.
+.TAGS Windows PowerShell Azure AzureActiveDirectory AzureADAccessToken AzureSecurity
+.LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
+.PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure
+.ICONURI 
+.EXTERNALMODULEDEPENDENCIES AzureADPreview AzureRM
+.REQUIREDSCRIPTS 
+.EXTERNALSCRIPTDEPENDENCIES 
+.RELEASENOTES
+#>
+
+<# 
+.DESCRIPTION 
+ Lets you change the default lifetime of the Azure AD Access Token
+#> 
+
+<#
 .SYNOPSIS 
     Lets you change the default lifetime of the Azure AD Access Token
 
@@ -21,7 +42,6 @@
     E-mail: arjun.bahree@gmail.com
     Creation Date: 31/Dec/2017
     Last Revision Date: 31/Dec/2017
-    Version: 1.0
     Development Environment: VS Code IDE
     PS Version: 5.1
     Platform: Windows

@@ -39,7 +39,6 @@
     E-mail: arjun.bahree@gmail.com
     Creation Date: 29/Dec/2017
     Last Revision Date: 12/Jan/2018
-    Version: 2.0
     Development Environment: VS Code IDE
     PS Version: 5.1
     Platform: Windows
