@@ -118,7 +118,7 @@ param(
     [String[]]$ResourceGroupName,
     
     [Parameter(Mandatory = $false)]
-    [String[]]$VMName	
+    [String[]]$VMName
 )
 
 
@@ -128,11 +128,11 @@ if (!(Get-AzureRmContext).Account) {
         # Get the connection "AzureRunAsConnection "
         $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
     
-        $account = Add-AzureRmAccount `
+         Add-AzureRmAccount `
             -ServicePrincipal `
             -TenantId $servicePrincipalConnection.TenantId `
             -ApplicationId $servicePrincipalConnection.ApplicationId `
-            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
+            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint > $null
     }
     catch {
         if (!$servicePrincipalConnection) {
@@ -216,9 +216,9 @@ function Connect-AzureRMVMRemote {
 
     if ($VM) {
         # Add Azure CustomScript Extension to the VM in context, and download/run a custom PS configuration script located on a remote Uri location (on a Public Github GIST within the repository for this Runbook)
-        $extension = Set-AzureRmVMCustomScriptExtension -ResourceGroupName $ResourceGroupName -VMName $VM.Name -Name "EnableWinRM_HTTPS" `
+        Set-AzureRmVMCustomScriptExtension -ResourceGroupName $ResourceGroupName -VMName $VM.Name -Name "EnableWinRM_HTTPS" `
             -Location $VM.Location -RunFile "ConfigureWinRM_HTTPS.ps1" -Argument $DNSName `
-            -FileUri "https://gist.githubusercontent.com/bahreex/526de42953a13ef0e3f3af093cff6a74/raw/b6e42d627d37cd39dc0e31e851a3c1b9230ebc0e/ConfigureWinRM_HTTPS.ps1"
+            -FileUri "https://gist.githubusercontent.com/bahreex/526de42953a13ef0e3f3af093cff6a74/raw/b6e42d627d37cd39dc0e31e851a3c1b9230ebc0e/ConfigureWinRM_HTTPS.ps1" > $null
 
         # Get the name of the first NIC in the VM
         $nicName = Get-AzureRmResource -ResourceId $VM.NetworkProfile.NetworkInterfaces[0].Id
@@ -236,7 +236,7 @@ function Connect-AzureRMVMRemote {
         # Check if the NSG Rule named "WinRM_HTTPS" already exists or not. If it already exists, skip, else create new rule with same name
         if (!$CheckNSGRule) {
             # Add the new NSG rule, and update the NSG
-            $InboundRule = $nsg | Add-AzureRmNetworkSecurityRuleConfig -Name "WinRM_HTTPS" -Priority 1100 -Protocol TCP -Access Allow -SourceAddressPrefix $SourceAddressPrefix -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 5986 -Direction Inbound -ErrorAction SilentlyContinue | Set-AzureRmNetworkSecurityGroup -ErrorAction SilentlyContinue
+            $nsg | Add-AzureRmNetworkSecurityRuleConfig -Name "WinRM_HTTPS" -Priority 1100 -Protocol TCP -Access Allow -SourceAddressPrefix $SourceAddressPrefix -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 5986 -Direction Inbound -ErrorAction SilentlyContinue | Set-AzureRmNetworkSecurityGroup -ErrorAction SilentlyContinue > $null
         }
 
         $NICs = Get-AzureRmNetworkInterface | Where-Object {$_.VirtualMachine.Id -eq $VM.Id}
@@ -339,7 +339,7 @@ function Create-AzureAutomationCredentials {
             $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $UserName, $SecurePassword
             
             # Creat new Azure Automation PS Credential object for the Input credential Info
-            $vmAzureAutomationCredential = New-AzureRmAutomationCredential -AutomationAccountName $AzureAutomationAccountName -Name $CredName -Value $Credential -ResourceGroupName $AzureAutomationResourceGroupName
+            New-AzureRmAutomationCredential -AutomationAccountName $AzureAutomationAccountName -Name $CredName -Value $Credential -ResourceGroupName $AzureAutomationResourceGroupName > $null
         }
         catch {
             Write-Error "Unable to create new Azure Automation Credential for VM {$CredentialName}. Exception: $($_.Exception)" 2> $null

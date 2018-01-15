@@ -106,11 +106,11 @@ if (!(Get-AzureRmContext).Account) {
         # Get the connection "AzureRunAsConnection "
         $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
     
-        $account = Add-AzureRmAccount `
+        Add-AzureRmAccount `
             -ServicePrincipal `
             -TenantId $servicePrincipalConnection.TenantId `
             -ApplicationId $servicePrincipalConnection.ApplicationId `
-            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
+            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint > $null
     }
     catch {
         if (!$servicePrincipalConnection) {

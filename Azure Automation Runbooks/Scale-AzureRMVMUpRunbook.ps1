@@ -85,13 +85,13 @@ if (!(Get-AzureRmContext).Account) {
     $connectionName = "AzureRunAsConnection"
     try {
         # Get the connection "AzureRunAsConnection "
-        $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName         
-    
-        $account = Add-AzureRmAccount `
+        $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName
+        
+        Add-AzureRmAccount `
             -ServicePrincipal `
             -TenantId $servicePrincipalConnection.TenantId `
             -ApplicationId $servicePrincipalConnection.ApplicationId `
-            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint 
+            -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint > $null
     }
     catch {
         if (!$servicePrincipalConnection) {
@@ -117,7 +117,7 @@ function ResizeVM ($rgName, $vmName, $newVMSize) {
     
     $vmRef.HardwareProfile.VmSize = $newVMSize
     
-    $Job = Update-AzureRmVM -VM $vmRef -ResourceGroupName $rgName -AsJob
+    Update-AzureRmVM -VM $vmRef -ResourceGroupName $rgName -AsJob > $null
 
     Get-Job | Wait-Job | Receive-Job > $null
 }
