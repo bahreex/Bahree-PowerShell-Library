@@ -154,7 +154,7 @@ if ($vm)
     If ($stopVM)
     {
         Write-Output "Restart the VM as it was stopped from a Running State..."
-        $startVMJob = Start-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -AsJob
+        Start-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -AsJob > $null
     }
 
     Write-Output "OS Disk size change successful."
