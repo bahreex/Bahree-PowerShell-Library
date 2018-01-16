@@ -31,7 +31,7 @@ Lets you Scale down any Azure RM VM from its current size to a new size within t
     lesser than your current VM size number in the Size Table, your VM will be scaled down to that Size in the Size 
     table corresponding to that number. If your VM is already at the most basic size for the VM family, you will not be 
     able to scale down the VM any further as cross-family resizing is not allowed by Microsoft Azure. Since Microsoft 
-    does not make the VM Size Table available in a format that cna be consumed programmatically for reference, I have 
+    does not make the VM Size Table available in a format that can be consumed programmatically for reference, I have 
     manually created the same and publicly shared through a Gist in my Github repository. The URL for the Gist is 
     embedded in the Runbook code, which I will regularly update as and when Microsoft updates the VM Size table. You can 
     find the most current VM Size table at the Gist URL (https://gist.github.com/bahreex/96a611b5ca05de2df2c3d7f45b11b75d) 
