@@ -45,8 +45,9 @@ Lets you Scale down any Azure RM VM from its current size to a new size within t
     Name of the target VM
 
 .Parameter SizeStep
-    Scalar value between -1 to -8. This has a default value of -1, which will resize the VM to Immediately before size within same VM family within the Size Table. The value you 
-    specify in this parameter, which should be lesser than your current VM size number in the Size Table, will be used to scale down your VM to that Size in the Size table 
+    Scalar value between -1 to -8. This has a default value of -1, which will resize the VM to Immediately before size 
+    within same VM family within the Size Table. The value you specify in this parameter, which should be lesser than 
+    your current VM size number in the Size Table, will be used to scale down your VM to that Size in the Size table 
     corresponding to the specified number.
 
 .EXAMPLE
