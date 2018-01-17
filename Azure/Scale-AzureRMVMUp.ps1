@@ -34,8 +34,8 @@
     make the VM Size Table available in a format that cna be consumed programmatically for reference, I have manually 
     created the same and publicly shared through a Gist in my Github repository. The URL for the Gist is embedded in the
     Script code, which I will regularly update as and when Microsoft updates the VM Size table. You can find the most 
-    current VM Size table at the Gist URL (https://gist.github.com/bahreex/96a611b5ca05de2df2c3d7f45b11b75d) and within 
-    this repository as a CSV file named "Azure-VM-Sizes-29122017.csv". You need to be already logged into your Azure 
+    current VM Size table at the Gist URL (https://gist.github.com/bahreex/b739eae625e3a7fd2c1359ddd8644032) and within 
+    this repository as a CSV file named "Azure-VM-Sizes-Master.csv". You need to be already logged into your Azure 
     account through PowerShell before calling this script.
 
 .Parameter ResourceGroupName
@@ -111,7 +111,7 @@ If ($VM) {
 
     $vSize = $VM.HardwareProfile.VmSize
 
-    $vmSizeURL = "https://gist.githubusercontent.com/bahreex/96a611b5ca05de2df2c3d7f45b11b75d/raw/bf2065fd27171d616b6c2373d58a387a82dff114/Azure-VM-Sizes-29122017.csv"
+    $vmSizeURL = "https://gist.githubusercontent.com/bahreex/b739eae625e3a7fd2c1359ddd8644032/raw/8d73236294678ebcffe30378765bf8e6d1186d7e/Azure-VM-Sizes-Master.csv"
 
     $content = (Invoke-WebRequest -Uri $vmSizeURL -UseBasicParsing).Content
 
