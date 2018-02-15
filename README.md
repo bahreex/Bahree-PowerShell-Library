@@ -28,3 +28,5 @@ _**Library of various PowerShell scripts/modules created for automating differen
 ## General
 
 - **Extend-WinOSDiskSize.ps1** - Extend/Increase the OS Drive Partition size for any Windows based Machine by adding the entire unallocated space available on the OS Disk, if any. One use case for this script is to automate completion of the OS disk expansion in an Azure RM VM, after the OS Disk size has been increased from the outside of VM using PS Azure cmdlets or Azure REST APIs or Azure Portal (For e.g through _Expand-AzureRMVMOSDisk.ps1_ script).
+- **Initialize-WinNewDataDisk.ps1** - Lets you Initialize new RAW data disks on any Windows based Machine. This will be particularly useful after creating and attaching new empty data disks to an Azure VM
+- **FixSpectre-DSCConfiguration.ps1** - Fixes the Spectre CPU Vulnerability on your Windows Machines through DSC Configuration for Registry changes recommended by Microsoft

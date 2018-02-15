@@ -2,54 +2,54 @@
 .VERSION 1.0.0
 .GUID f70a114b-5f40-4193-8401-dc37ccbf88a6
 .AUTHOR Arjun Bahree
-.COMPANYNAME 
+.COMPANYNAME
 .COPYRIGHT (c) 2018 Arjun Bahree. All rights reserved.
 .TAGS Windows PowerShell Azure AzureVM
 .LICENSEURI https://github.com/bahreex/Bahree-PowerShell-Library/blob/master/LICENSE
 .PROJECTURI https://github.com/bahreex/Bahree-PowerShell-Library/tree/master/Azure
-.ICONURI 
+.ICONURI
 .EXTERNALMODULEDEPENDENCIES AzureRM
-.REQUIREDSCRIPTS 
-.EXTERNALSCRIPTDEPENDENCIES 
+.REQUIREDSCRIPTS
+.EXTERNALSCRIPTDEPENDENCIES
 .RELEASENOTES
 #>
 
-<# 
-.DESCRIPTION 
+<#
+.DESCRIPTION
 Asynchronously Starts all or specific Azure RM VMs in an Azure Subscription
-#> 
+#>
 
 <#
-.SYNOPSIS 
+.SYNOPSIS
     Asynchronously Starts all or specific Azure RM VMs in an Azure Subscription
 
 .DESCRIPTION
-    This Script asynchronously Starts either all Azure RM VMs in an Azure Subscription, or all Azure RM VMs in one or 
-    more specified Resource Groups, or one or more VMs in a specific Resource Group, or any number of Random VMs in a 
-    Subscription. You can specify one or more Resource Groups to exclude, wherein all VMs in those Resource Groups will 
-    not be started. You can specify one or more VMs to exclude, wherein all those VMs will not be started. The choice 
-    around which VMs to start depends on the combination and values of the parameters provided. You need to be already 
+    This Script asynchronously Starts either all Azure RM VMs in an Azure Subscription, or all Azure RM VMs in one or
+    more specified Resource Groups, or one or more VMs in a specific Resource Group, or any number of Random VMs in a
+    Subscription. You can specify one or more Resource Groups to exclude, wherein all VMs in those Resource Groups will
+    not be started. You can specify one or more VMs to exclude, wherein all those VMs will not be started. The choice
+    around which VMs to start depends on the combination and values of the parameters provided. You need to be already
     logged into your Azure account through PowerShell before calling this script.
 
 .PARAMETER ResourceGroupName
-    Name of the Resource Group containing the VMs you want to Start. Specifying just the Resource Group without 
-    the "VMName" parameter will consider all VMs in that specified Resource Group. You can specify an array of 
+    Name of the Resource Group containing the VMs you want to Start. Specifying just the Resource Group without
+    the "VMName" parameter will consider all VMs in that specified Resource Group. You can specify an array of
     Resource Group names without "VMname" parameter, and all VMs withihn the specified Resource Groups in the array will
-    be started. You can specify just a single Resource Group Name in this parameter, along with one or more VM names in 
+    be started. You can specify just a single Resource Group Name in this parameter, along with one or more VM names in
     the "VMName" parameter, wherein all the VMs specified will be started in that specific Resource Group. You cannot
     specify more than one Resource Group Names when combined with the "VMName" parameter.
 
-.PARAMETER VMName    
-    Name of the VM you want to Start. This parameter when specified alone, without the "ResourceGroupName" 
+.PARAMETER VMName
+    Name of the VM you want to Start. This parameter when specified alone, without the "ResourceGroupName"
     parameter, can Include one or more VM Names to be started across any resource groups in the Azure Subscription. When
     specified with the "ResourceGroupName" parameter, you need to Include one or more VMs in the specified Resource
     Group only.
 
 .PARAMETER ExcludedResourceGroupName
-    Name of the Resource Group(s) containing the VMs you want excluded from being Started. It cannot be combined with 
+    Name of the Resource Group(s) containing the VMs you want excluded from being Started. It cannot be combined with
     "ResourceGroupName" and "VMName" parameters.
 
-.PARAMETER ExcludedVMName    
+.PARAMETER ExcludedVMName
     Name of the VM(s) you want excluded from being Started. It cannot be combined with "VMName" parameter.
 
 
@@ -73,7 +73,7 @@ Asynchronously Starts all or specific Azure RM VMs in an Azure Subscription
     .\Start-AzureRMVMAll.ps1 -ResourceGroupName RG1 -ExcludedVMName VM5,VM6,VM7
 .EXAMPLE
     .\Start-AzureRMVMAll.ps1 -ResourceGroupName RG1,RG2,RG3 -ExcludedVMName VM5,VM6,VM7
-    
+
 .Notes
     Author: Arjun Bahree
     E-mail: arjun.bahree@gmail.com
@@ -85,16 +85,16 @@ Asynchronously Starts all or specific Azure RM VMs in an Azure Subscription
 #>
 [CmdletBinding()]
 param(
- 
+
     [Parameter(Mandatory = $false)]
     [String[]]$ResourceGroupName,
-    
+
     [Parameter(Mandatory = $false)]
     [String[]]$VMName,
 
     [Parameter(Mandatory=$false)]
     [String[]]$ExcludedResourceGroupName,
-    
+
     [Parameter(Mandatory=$false)]
     [String[]]$ExcludedVMName
 )
@@ -117,7 +117,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
 
    # Check if one or more VMs were discovered across Subscription
    if ($VMs) {
-       
+
        # Iterate through all the VMs discovered within the Subscription
        foreach ($vmx in $VMs) {
 
@@ -138,7 +138,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
                     continue
                 }
             }
-           
+
            # Get reference to the specific VM for this Iteration
            $vm = Get-AzureRmVM -ResourceGroupName $vmx.ResourceGroupName -Name $vmx.Name
 
@@ -147,10 +147,10 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
 
            # Get current status of the VM
            $vmstatus = Get-AzureRmVM -ResourceGroupName $RGBaseName -Name $VMBaseName -Status
-                   
+
            # Extract current Power State of the VM
            $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]
-           
+
            # Check PowerState Level of the VM, and start it only if it is in a "Running" or "Starting" state
            if ($VMState) {
                if ($VMState -in "deallocated","stopped") {
@@ -173,7 +173,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
            }
        }
    }
-   else 
+   else
    {
        Write-Verbose "There are no VMs in the Azure Subscription."
        continue
@@ -181,7 +181,7 @@ If (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameter
 }
 # Check if only Resource Group param is passed, but not the VM Name param
 Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParameters.ContainsKey('VMName')) {
-   
+
     If ($PSBoundParameters.ContainsKey('ExcludedResourceGroupName'))
     {
         Write-Verbose "You cannot specify Parameters 'ExcludedResourceGroupName' together with 'ResourceGroupName'"
@@ -196,9 +196,9 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
         if(!$?)
         {
             Write-Verbose "The Resource Group {$rg} does not exist. Skipping."
-            continue             
+            continue
         }
-        
+
         if ($VMs) {
             # Iterate through all the VMs within the specific Resource Group for this Iteration
             foreach ($vm in $VMs) {
@@ -219,7 +219,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And !$PSBoundParame
 
                 # Extract current Power State of the VM
                 $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]
-                
+
                 if ($VMState) {
                     if ($VMState -in "deallocated", "stopped") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$rg} is currently Deallocated/Stopped. Starting..."
@@ -274,7 +274,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
 
     if (!$testRG) {
         Write-Verbose "The Resource Group {$ResourceGroupName} does not exist. Skipping."
-        continue            
+        continue
     }
 
     # Iterate through all VM's specified
@@ -284,7 +284,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
         $vm = Get-AzureRmVm -ResourceGroupName $ResourceGroupName -Name $vms -ErrorAction SilentlyContinue
 
         if ($vm) {
-            
+
             $VMBaseName = $vm.Name
             $RGBaseName = $vm.ResourceGroupName
 
@@ -308,7 +308,7 @@ Elseif ($PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParamet
                     Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Skipping."
                     continue
                 }
-            }        
+            }
             else {
                 Write-Verbose "Unable to determine PowerState of the VM {$VMBaseName} in Resource Group {$RGBaseName}. Hence, cannot start the VM. Skipping to next VM..."
                 continue
@@ -336,7 +336,7 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
     }
 
     foreach ($vms in $VMName) {
-       
+
         # Find the specific VM resource
         $vmFind = Find-AzureRmResource -ResourceNameEquals $vms
 
@@ -345,10 +345,10 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
         {
             # Extract the Resource Group Name of the VM
             $RGBaseName = $vmFind.ResourceGroupName
-            
+
             # Get reference object of the VM
             $vm = Get-AzureRmVm -ResourceGroupName $RGBaseName -Name $vms
-            
+
             if ($vm) {
 
                 $VMBaseName = $vm.Name
@@ -358,7 +358,7 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
 
                 # Extract current Power State of the VM
                 $VMState = $vmstatus.Statuses[1].Code.Split('/')[1]
-                    
+
                 if ($VMState) {
                     if ($VMState -in "deallocated","stopped") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is currently Deallocated/Stopped. Starting..."
@@ -367,20 +367,20 @@ Elseif (!$PSBoundParameters.ContainsKey('ResourceGroupName') -And $PSBoundParame
                     }
                     elseif ($VMState -in "running","starting") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is either already Started or Starting. Skipping."
-                        continue 
+                        continue
                     }
                     elseif ($VMState -in "stopping","deallocating") {
                         Write-Verbose "The VM {$VMBaseName} in Resource Group {$RGBaseName} is in a transient state of Stopping or Deallocating. Skipping."
                         continue
                     }
-                }        
+                }
                 else {
                     Write-Verbose "Unable to determine PowerState of the VM {$VMBaseName} in Resource Group {$RGBaseName}. Hence, cannot start the VM. Skipping to next VM..."
                     continue
                 }
             }
             else {
-                
+
                 Write-Error "There is no Virtual Machine named {$vms} in the Azure Subscription. Aborting..."
                 return
             }
